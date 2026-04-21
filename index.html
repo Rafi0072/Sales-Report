@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>St George Sales — Feb–Apr 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+/* ── THEME ── */
+[data-theme="light"]{
+  --bg:#f5f4f0;--bg2:#ffffff;--bg3:#eceae3;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
+  --text:#1a1a18;--muted:#666660;--subtle:#aaa9a3;
+  --accent1:#9a6e00;--accent2:#1a6ec0;--accent3:#0a7a55;--purple:#5b48c4;
+  --accent1-dim:rgba(154,110,0,0.1);--accent2-dim:rgba(26,110,192,0.1);
+  --accent3-dim:rgba(10,122,85,0.1);--purple-dim:rgba(91,72,196,0.1);
+  --bar-track:#e2e0d8;--nav-bg:#ffffff;--nav-shadow:0 1px 0 rgba(0,0,0,0.08);
+  --zero-col:#ccc;--row-stripe:rgba(0,0,0,0.025);--row-hover:rgba(0,0,0,0.04);
+  --thead-bg:#eceae3;
+}
+[data-theme="dark"]{
+  --bg:#0f0f11;--bg2:#18181c;--bg3:#222228;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#f0eee8;--muted:#888880;--subtle:#555550;
+  --accent1:#e8c06a;--accent2:#5b9cf6;--accent3:#4ecba0;--purple:#a78bfa;
+  --accent1-dim:rgba(232,192,106,0.15);--accent2-dim:rgba(91,156,246,0.15);
+  --accent3-dim:rgba(78,203,160,0.15);--purple-dim:rgba(167,139,250,0.15);
+  --bar-track:#222228;--nav-bg:#18181c;--nav-shadow:0 1px 0 rgba(255,255,255,0.07);
+  --zero-col:#444442;--row-stripe:rgba(255,255,255,0.02);--row-hover:rgba(255,255,255,0.04);
+  --thead-bg:#222228;
+}
+
+/* ── NAV ── */
+.nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--nav-bg);box-shadow:var(--nav-shadow);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;height:52px;
+  transition:background 0.2s;
+}
+.nav-brand{
+  font-family:'DM Serif Display',serif;font-size:16px;
+  color:var(--text);white-space:nowrap;
+}
+.nav-tabs{display:flex;gap:2px;flex:1;justify-content:center;}
+.nav-tab{
+  background:none;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
+  color:var(--muted);padding:6px 16px;border-radius:8px;
+  transition:background 0.15s,color 0.15s;white-space:nowrap;
+}
+.nav-tab:hover{background:var(--bg3);color:var(--text);}
+.nav-tab.active{background:var(--accent1-dim);color:var(--accent1);}
+.nav-right{display:flex;align-items:center;gap:8px;}
+.theme-btn{
+  background:var(--bg3);border:1px solid var(--border2);color:var(--text);
+  font-size:14px;cursor:pointer;border-radius:8px;padding:5px 9px;line-height:1;
+  transition:background 0.2s;white-space:nowrap;
+}
+.theme-btn:hover{background:var(--border);}
+
+/* ── PAGES ── */
+.page{display:none;padding:24px 20px 48px;max-width:1100px;margin:0 auto;}
+.page.active{display:block;}
+.page-table{max-width:1300px;}
+
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;
+  min-height:100vh;transition:background 0.2s,color 0.2s;}
+
+/* ── DASHBOARD CSS ── */
+.eyebrow{font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent1);margin-bottom:6px;}
+.page-title{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;color:var(--text);line-height:1.1;}
+.dash-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.dash-header-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.date-range{font-size:12px;color:var(--muted);line-height:1.6;text-align:right;}
+.location-pills{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
+.pill{font-size:10px;font-weight:500;padding:3px 10px;border-radius:100px;letter-spacing:0.04em;}
+.pill-blue{background:var(--accent2-dim);color:var(--accent2);border:1px solid rgba(26,110,192,0.2);}
+.pill-green{background:var(--accent3-dim);color:var(--accent3);border:1px solid rgba(10,122,85,0.2);}
+[data-theme="dark"] .pill-blue{border-color:rgba(91,156,246,0.25);}
+[data-theme="dark"] .pill-green{border-color:rgba(78,203,160,0.25);}
+
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.metric-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 16px;position:relative;overflow:hidden;transition:border-color 0.2s;animation:fadeUp 0.5s ease both;}
+.metric-card:hover{border-color:var(--border2);}
+.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.metric-card.gold::before{background:linear-gradient(90deg,var(--accent1),transparent);}
+.metric-card.blue::before{background:linear-gradient(90deg,var(--accent2),transparent);}
+.metric-card.green::before{background:linear-gradient(90deg,var(--accent3),transparent);}
+.metric-card.purple::before{background:linear-gradient(90deg,var(--purple),transparent);}
+.metric-card:nth-child(1){animation-delay:0.05s;}
+.metric-card:nth-child(2){animation-delay:0.1s;}
+.metric-card:nth-child(3){animation-delay:0.15s;}
+.metric-card:nth-child(4){animation-delay:0.2s;}
+.metric-label{font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.metric-value{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;color:var(--text);line-height:1;margin-bottom:4px;}
+.metric-sub{font-size:11px;color:var(--subtle);}
+.metric-badge{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;margin-top:5px;}
+.badge-gold{background:var(--accent1-dim);color:var(--accent1);}
+.badge-blue{background:var(--accent2-dim);color:var(--accent2);}
+.badge-green{background:var(--accent3-dim);color:var(--accent3);}
+.badge-purple{background:var(--purple-dim);color:var(--purple);}
+
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;animation:fadeUp 0.5s ease 0.25s both;}
+.chart-card.full{grid-column:1/-1;}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.chart-title{font-size:11px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);}
+.legend{display:flex;gap:12px;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
+.legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.chart-wrap{position:relative;width:100%;height:210px;}
+.products-grid{display:flex;flex-direction:column;}
+.product-row{display:grid;grid-template-columns:160px 1fr 76px;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);}
+.product-row:last-child{border-bottom:none;}
+.product-name{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.product-bar-track{height:5px;background:var(--bar-track);border-radius:3px;overflow:hidden;}
+.product-bar-fill{height:100%;border-radius:3px;transition:width 1s cubic-bezier(0.16,1,0.3,1);}
+.product-value{font-size:12px;font-weight:500;color:var(--text);text-align:right;font-variant-numeric:tabular-nums;}
+.product-rank{font-size:10px;color:var(--subtle);margin-right:3px;}
+.dash-footer{margin-top:24px;padding-top:14px;border-top:1px solid var(--border);font-size:11px;color:var(--subtle);text-align:center;}
+
+/* ── TABLE CSS ── */
+.tbl-controls{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.search-wrap{position:relative;flex:1;min-width:140px;max-width:300px;}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:0.4;pointer-events:none;}
+input[type="text"]{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 10px 8px 32px;outline:none;transition:border-color 0.2s;}
+input[type="text"]::placeholder{color:var(--subtle);}
+input[type="text"]:focus{border-color:var(--border2);}
+select{background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 28px 8px 10px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%23999' d='M5 7L1 3h8z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;}
+.count-badge{font-size:12px;color:var(--muted);margin-left:auto;white-space:nowrap;}
+.count-badge span{color:var(--accent1);font-weight:500;}
+
+.table-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.table-scroll{overflow-x:auto;max-height:65vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.table-scroll::-webkit-scrollbar{width:5px;height:5px;}
+.table-scroll::-webkit-scrollbar-track{background:transparent;}
+.table-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead{position:sticky;top:0;z-index:10;}
+.group-header th{background:var(--thead-bg);padding:9px 10px 5px;font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;text-align:center;}
+.group-header th.item-col{text-align:left;}
+.outlet-header th{background:var(--thead-bg);padding:5px 10px;font-size:9px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;text-align:center;}
+.outlet-kr{color:var(--accent2);}
+.outlet-sm{color:var(--accent3);}
+.col-header th{background:var(--thead-bg);padding:5px 10px 9px;font-size:10px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;border-bottom:1px solid var(--border2);color:var(--muted);white-space:nowrap;cursor:pointer;user-select:none;text-align:right;}
+.col-header th.item-col{text-align:left;min-width:140px;}
+.col-header th:hover{color:var(--text);}
+.col-header th.sort-asc::after{content:' ↑';color:var(--accent1);}
+.col-header th.sort-desc::after{content:' ↓';color:var(--accent1);}
+.span-feb{color:#7c5cbf;}.span-mar{color:var(--accent2);}.span-apr{color:var(--accent3);}.span-total{color:var(--accent1);}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:var(--row-hover);}
+tbody tr.striped{background:var(--row-stripe);}
+tbody tr.striped:hover{background:var(--row-hover);}
+td{padding:8px 10px;text-align:right;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums;font-size:12px;}
+td.item-name{text-align:left;color:var(--text);font-size:12px;min-width:140px;max-width:200px;overflow:hidden;text-overflow:ellipsis;}
+td.rank{color:var(--subtle);font-size:10px;padding-right:4px;min-width:28px;text-align:right;}
+td.total-qty{color:var(--text);font-weight:500;}
+td.total-sales{color:var(--accent1);font-weight:500;}
+td.zero{color:var(--zero-col);}
+.feb-end{border-right:1px solid var(--border2);}
+.mar-end{border-right:1px solid var(--border2);}
+.apr-end{border-right:1px solid var(--border2);}
+td.kr-sep,th.kr-sep{border-right:2px solid var(--border2);}
+[data-theme="dark"] td.kr-sep,[data-theme="dark"] th.kr-sep{border-right:2px solid rgba(255,255,255,0.18);}
+.no-results{text-align:center;padding:48px;color:var(--muted);font-size:14px;}
+.footer-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg3);border-top:1px solid var(--border2);font-size:12px;color:var(--muted);flex-wrap:wrap;gap:8px;}
+.footer-totals{display:flex;gap:20px;flex-wrap:wrap;}
+.footer-totals span{color:var(--text);font-weight:500;}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── MOBILE ── */
+@media(max-width:640px){
+  .nav{padding:0 12px;}
+  .nav-brand{font-size:13px;}
+  .nav-tab{padding:6px 10px;font-size:12px;}
+  .page{padding:16px 12px 40px;}
+  .page-title{font-size:20px;}
+  .dash-header{margin-bottom:16px;padding-bottom:14px;}
+  .metrics{grid-template-columns:1fr 1fr;gap:8px;}
+  .metric-value{font-size:20px;}
+  .metric-card{padding:13px 11px;}
+  .metric-badge{display:none;}
+  .charts-row{grid-template-columns:1fr;gap:10px;}
+  .chart-wrap{height:190px;}
+  .chart-header{flex-direction:column;align-items:flex-start;gap:5px;}
+  .product-row{grid-template-columns:110px 1fr 62px;gap:6px;}
+  .product-name{font-size:11px;}
+  .product-value{font-size:11px;}
+  .count-badge{display:none;}
+}
+@media(max-width:380px){.metrics{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">St George Sales</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('dashboard',this)">Dashboard</button>
+    <button class="nav-tab" onclick="showPage('table',this)">Full Table</button>
+  </div>
+  <div class="nav-right">
+    <button class="theme-btn" id="themeBtn" title="Toggle dark mode">&#127769;</button>
+  </div>
+</nav>
+
+<!-- DASHBOARD PAGE -->
+<div class="page active" id="page-dashboard">
+  <div class="dash-header">
+    <div>
+      <div class="eyebrow">Sales Performance Report</div>
+      <h1 class="page-title">St George (ALL)</h1>
+    </div>
+    <div class="dash-header-right">
+      <div class="date-range">February &ndash; April 2026<br>Monthly Sales Summary</div>
+      <div class="location-pills">
+        <span class="pill pill-blue">Kings Road</span>
+        <span class="pill pill-green">St Martin</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric-card gold">
+      <div class="metric-label">Total Revenue</div>
+      <div class="metric-value">&pound;972,807</div>
+      <div class="metric-sub">Feb &ndash; Apr 2026</div>
+      <div class="metric-badge badge-gold">All locations</div>
+    </div>
+    <div class="metric-card purple">
+      <div class="metric-label">Items Sold</div>
+      <div class="metric-value">132,972</div>
+      <div class="metric-sub">across all products</div>
+      <div class="metric-badge badge-purple">3 months</div>
+    </div>
+    <div class="metric-card blue">
+      <div class="metric-label">Kings Road</div>
+      <div class="metric-value">&pound;684,075</div>
+      <div class="metric-sub">70% of total revenue</div>
+      <div class="metric-badge badge-blue">Primary location</div>
+    </div>
+    <div class="metric-card green">
+      <div class="metric-label">St Martin</div>
+      <div class="metric-value">&pound;288,732</div>
+      <div class="metric-sub">30% of total revenue</div>
+      <div class="metric-badge badge-green">Second location</div>
+    </div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">Monthly Revenue</div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" id="dKR1"></div>Kings Road</div>
+          <div class="legend-item"><div class="legend-dot" id="dSM1"></div>St Martin</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="revenueChart" role="img" aria-label="Monthly revenue by location"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-title">Monthly Quantity Sold</div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" id="dKR2"></div>Kings Road</div>
+          <div class="legend-item"><div class="legend-dot" id="dSM2"></div>St Martin</div>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="qtyChart" role="img" aria-label="Monthly quantity sold by location"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-card full" style="margin-bottom:12px;">
+    <div class="chart-header">
+      <div class="chart-title">Top 15 Products by Revenue</div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" id="dBar" style="border-radius:50%;"></div>Total revenue (&pound;)</div>
+      </div>
+    </div>
+    <div class="products-grid" id="productsGrid"></div>
+  </div>
+
+  <div class="dash-footer">St George Sales &middot; Feb&ndash;Apr 2026 &middot; Kings Road &amp; St Martin</div>
+</div>
+
+<!-- TABLE PAGE -->
+<div class="page page-table" id="page-table">
+  <div class="dash-header">
+    <div>
+      <div class="eyebrow">Full Product Table</div>
+      <h1 class="page-title">Monthly Sales Breakdown</h1>
+    </div>
+    <div class="dash-header-right">
+      <div class="date-range">Feb &ndash; Apr 2026 &middot; St George (ALL)</div>
+      <div class="location-pills">
+        <span class="pill pill-blue">Kings Road</span>
+        <span class="pill pill-green">St Martin</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tbl-controls">
+    <div class="search-wrap">
+      <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="#888" stroke-width="1.5"/><path d="M9.5 9.5L12.5 12.5" stroke="#888" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <input type="text" id="searchInput" placeholder="Search products&hellip;" oninput="filterTable()">
+    </div>
+    <select id="sortSelect" onchange="sortTable()">
+      <option value="total_sales_desc">Revenue &darr;</option>
+      <option value="total_sales_asc">Revenue &uarr;</option>
+      <option value="total_qty_desc">Qty &darr;</option>
+      <option value="total_qty_asc">Qty &uarr;</option>
+      <option value="name_asc">Name A&ndash;Z</option>
+      <option value="name_desc">Name Z&ndash;A</option>
+    </select>
+    <div class="count-badge">Showing <span id="rowCount">268</span> of 268</div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-scroll">
+      <table id="mainTable">
+        <thead>
+          <tr class="group-header">
+            <th class="item-col" colspan="2" rowspan="3" style="vertical-align:bottom;padding-bottom:9px;">Product</th>
+            <th colspan="4" class="span-feb feb-end">February 2026</th>
+            <th colspan="4" class="span-mar mar-end">March 2026</th>
+            <th colspan="4" class="span-apr apr-end">April 2026</th>
+            <th colspan="2" class="span-total" rowspan="2" style="vertical-align:middle;">Total</th>
+          </tr>
+          <tr class="outlet-header">
+            <th colspan="2" class="outlet-kr kr-sep">Kings Road</th>
+            <th colspan="2" class="outlet-sm feb-end">St Martin</th>
+            <th colspan="2" class="outlet-kr kr-sep">Kings Road</th>
+            <th colspan="2" class="outlet-sm mar-end">St Martin</th>
+            <th colspan="2" class="outlet-kr kr-sep">Kings Road</th>
+            <th colspan="2" class="outlet-sm apr-end">St Martin</th>
+          </tr>
+          <tr class="col-header">
+            <th>Qty</th><th class="kr-sep">Sales</th>
+            <th>Qty</th><th class="feb-end">Sales</th>
+            <th>Qty</th><th class="kr-sep">Sales</th>
+            <th>Qty</th><th class="mar-end">Sales</th>
+            <th>Qty</th><th class="kr-sep">Sales</th>
+            <th>Qty</th><th class="apr-end">Sales</th>
+            <th>Qty</th><th>Revenue</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div id="noResults" class="no-results" style="display:none;">No products match your search.</div>
+    </div>
+    <div class="footer-bar">
+      <div class="footer-totals">
+        <div>Total Revenue: <span id="footerRevenue">&pound;972,807</span></div>
+        <div>Total Items: <span id="footerQty">132,972</span></div>
+      </div>
+      <div id="footerCount" style="color:var(--subtle);">268 products</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── DATA ── */
+const RAW = [{"item":"Tuna Sandwich","feb_kr_qty":1483,"feb_kr_sales":6730.79,"feb_sm_qty":470,"feb_sm_sales":2004.14,"mar_kr_qty":1810,"mar_kr_sales":8413.18,"mar_sm_qty":452,"mar_sm_sales":1800.79,"apr_kr_qty":1133,"apr_kr_sales":5133.0,"apr_sm_qty":247,"apr_sm_sales":985.29,"total_qty":5595,"total_sales":25067.19},{"item":"Flat White Whole Milk","feb_kr_qty":1771,"feb_kr_sales":6050.29,"feb_sm_qty":966,"feb_sm_sales":3286.49,"mar_kr_qty":2075,"mar_kr_sales":7026.43,"mar_sm_qty":964,"mar_sm_sales":3255.87,"apr_kr_qty":1085,"apr_kr_sales":3651.55,"apr_sm_qty":515,"apr_sm_sales":1728.98,"total_qty":7376,"total_sales":24999.61},{"item":"Avocado Toast HB","feb_kr_qty":560,"feb_kr_sales":6864.79,"feb_sm_qty":115,"feb_sm_sales":1297.62,"mar_kr_qty":725,"mar_kr_sales":8984.63,"mar_sm_qty":145,"mar_sm_sales":1785.33,"apr_kr_qty":364,"apr_kr_sales":4462.13,"apr_sm_qty":77,"apr_sm_sales":932.25,"total_qty":1986,"total_sales":24326.75},{"item":"Cappuccino Whole Milk","feb_kr_qty":1465,"feb_kr_sales":4876.74,"feb_sm_qty":576,"feb_sm_sales":1982.01,"mar_kr_qty":1694,"mar_kr_sales":5664.76,"mar_sm_qty":593,"mar_sm_sales":2033.49,"apr_kr_qty":938,"apr_kr_sales":3070.02,"apr_sm_qty":282,"apr_sm_sales":966.86,"total_qty":5548,"total_sales":18593.88},{"item":"Scrambled eggs","feb_kr_qty":408,"feb_kr_sales":5048.57,"feb_sm_qty":131,"feb_sm_sales":1474.25,"mar_kr_qty":434,"mar_kr_sales":5336.16,"mar_sm_qty":162,"mar_sm_sales":1964.75,"apr_kr_qty":258,"apr_kr_sales":3117.75,"apr_sm_qty":82,"apr_sm_sales":975.0,"total_qty":1475,"total_sales":17916.48},{"item":"Latte Whole Milk","feb_kr_qty":1120,"feb_kr_sales":4268.97,"feb_sm_qty":436,"feb_sm_sales":1630.0,"mar_kr_qty":1223,"mar_kr_sales":4681.0,"mar_sm_qty":428,"mar_sm_sales":1591.6,"apr_kr_qty":677,"apr_kr_sales":2578.36,"apr_sm_qty":234,"apr_sm_sales":841.0,"total_qty":4118,"total_sales":15590.93},{"item":"Ham and butter Sandwich","feb_kr_qty":875,"feb_kr_sales":3292.46,"feb_sm_qty":535,"feb_sm_sales":2015.17,"mar_kr_qty":942,"mar_kr_sales":3625.75,"mar_sm_qty":549,"mar_sm_sales":1997.6,"apr_kr_qty":555,"apr_kr_sales":2145.29,"apr_sm_qty":279,"apr_sm_sales":1002.61,"total_qty":3735,"total_sales":14078.88},{"item":"Pain Au Chocolat","feb_kr_qty":1840,"feb_kr_sales":3484.76,"feb_sm_qty":724,"feb_sm_sales":1354.43,"mar_kr_qty":2057,"mar_kr_sales":3868.81,"mar_sm_qty":718,"mar_sm_sales":1303.09,"apr_kr_qty":1190,"apr_kr_sales":2211.56,"apr_sm_qty":353,"apr_sm_sales":664.79,"total_qty":6882,"total_sales":12887.44},{"item":"Croissant","feb_kr_qty":1809,"feb_kr_sales":3366.62,"feb_sm_qty":592,"feb_sm_sales":1109.5,"mar_kr_qty":2145,"mar_kr_sales":4061.8,"mar_sm_qty":582,"mar_sm_sales":1089.77,"apr_kr_qty":1220,"apr_kr_sales":2249.24,"apr_sm_qty":305,"apr_sm_sales":562.9,"total_qty":6653,"total_sales":12439.83},{"item":"Americano","feb_kr_qty":979,"feb_kr_sales":2847.3,"feb_sm_qty":387,"feb_sm_sales":1107.6,"mar_kr_qty":1108,"mar_kr_sales":3252.76,"mar_sm_qty":444,"mar_sm_sales":1259.73,"apr_kr_qty":522,"apr_kr_sales":1501.8,"apr_sm_qty":180,"apr_sm_sales":522.9,"total_qty":3620,"total_sales":10492.09},{"item":"Flat White-Oat Milk","feb_kr_qty":811,"feb_kr_sales":2614.5,"feb_sm_qty":372,"feb_sm_sales":1256.42,"mar_kr_qty":853,"mar_kr_sales":2865.63,"mar_sm_qty":303,"mar_sm_sales":1017.62,"apr_kr_qty":402,"apr_kr_sales":1320.9,"apr_sm_qty":191,"apr_sm_sales":642.42,"total_qty":2932,"total_sales":9717.49},{"item":"Chocolate Hazelnut Cookie","feb_kr_qty":1016,"feb_kr_sales":2785.0,"feb_sm_qty":287,"feb_sm_sales":721.65,"mar_kr_qty":1094,"mar_kr_sales":2899.59,"mar_sm_qty":255,"mar_sm_sales":587.06,"apr_kr_qty":609,"apr_kr_sales":1507.47,"apr_sm_qty":153,"apr_sm_sales":317.61,"total_qty":3414,"total_sales":8818.38},{"item":"Baguette","feb_kr_qty":737,"feb_kr_sales":2197.2,"feb_sm_qty":298,"feb_sm_sales":876.0,"mar_kr_qty":908,"mar_kr_sales":2696.76,"mar_sm_qty":337,"mar_sm_sales":973.2,"apr_kr_qty":462,"apr_kr_sales":1359.75,"apr_sm_qty":215,"apr_sm_sales":642.0,"total_qty":2957,"total_sales":8744.91},{"item":"Latte Oat Milk","feb_kr_qty":606,"feb_kr_sales":2292.8,"feb_sm_qty":222,"feb_sm_sales":815.4,"mar_kr_qty":595,"mar_kr_sales":2284.2,"mar_sm_qty":231,"mar_sm_sales":834.6,"apr_kr_qty":320,"apr_kr_sales":1232.8,"apr_sm_qty":116,"apr_sm_sales":424.8,"total_qty":2090,"total_sales":7884.6},{"item":"Saucission Sandwich","feb_kr_qty":465,"feb_kr_sales":1693.64,"feb_sm_qty":317,"feb_sm_sales":1161.51,"mar_kr_qty":590,"mar_kr_sales":2180.55,"mar_sm_qty":305,"mar_sm_sales":1084.98,"apr_kr_qty":284,"apr_kr_sales":1021.89,"apr_sm_qty":163,"apr_sm_sales":592.34,"total_qty":2124,"total_sales":7734.91},{"item":"Almond Croissant","feb_kr_qty":663,"feb_kr_sales":1860.99,"feb_sm_qty":332,"feb_sm_sales":930.28,"mar_kr_qty":797,"mar_kr_sales":2294.76,"mar_sm_qty":288,"mar_sm_sales":803.7,"apr_kr_qty":416,"apr_kr_sales":1193.82,"apr_sm_qty":146,"apr_sm_sales":354.9,"total_qty":2642,"total_sales":7438.45},{"item":"Eggs Benedict Salmon","feb_kr_qty":280,"feb_kr_sales":1858.23,"feb_sm_qty":137,"feb_sm_sales":803.62,"mar_kr_qty":303,"mar_kr_sales":2000.72,"mar_sm_qty":156,"mar_sm_sales":978.1,"apr_kr_qty":223,"apr_kr_sales":1424.6,"apr_sm_qty":53,"apr_sm_sales":342.0,"total_qty":1152,"total_sales":7407.27},{"item":"Iced Latte Whole Milk","feb_kr_qty":394,"feb_kr_sales":1259.2,"feb_sm_qty":122,"feb_sm_sales":400.6,"mar_kr_qty":634,"mar_kr_sales":2242.0,"mar_sm_qty":181,"mar_sm_sales":559.4,"apr_kr_qty":552,"apr_kr_sales":1889.4,"apr_sm_qty":172,"apr_sm_sales":469.4,"total_qty":2055,"total_sales":6820.0},{"item":"Pizza mortadella Kings","feb_kr_qty":384,"feb_kr_sales":2350.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":394,"mar_kr_sales":2375.95,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":251,"apr_kr_sales":1448.52,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":1029,"total_sales":6174.47},{"item":"Kouign amann","feb_kr_qty":559,"feb_kr_sales":1652.4,"feb_sm_qty":274,"feb_sm_sales":608.33,"mar_kr_qty":670,"mar_kr_sales":1965.46,"mar_sm_qty":184,"mar_sm_sales":448.95,"apr_kr_qty":335,"apr_kr_sales":983.82,"apr_sm_qty":95,"apr_sm_sales":237.75,"total_qty":2117,"total_sales":5896.71},{"item":"Cappuccino-Oat Milk","feb_kr_qty":571,"feb_kr_sales":1954.75,"feb_sm_qty":104,"feb_sm_sales":341.95,"mar_kr_qty":514,"mar_kr_sales":1728.65,"mar_sm_qty":119,"mar_sm_sales":406.7,"apr_kr_qty":274,"apr_kr_sales":894.77,"apr_sm_qty":53,"apr_sm_sales":181.3,"total_qty":1635,"total_sales":5508.12},{"item":"Brownie","feb_kr_qty":350,"feb_kr_sales":1045.7,"feb_sm_qty":176,"feb_sm_sales":628.33,"mar_kr_qty":395,"mar_kr_sales":1187.17,"mar_sm_qty":166,"mar_sm_sales":526.63,"apr_kr_qty":241,"apr_kr_sales":696.16,"apr_sm_qty":109,"apr_sm_sales":380.6,"total_qty":1437,"total_sales":4464.59},{"item":"French Toast","feb_kr_qty":88,"feb_kr_sales":1044.0,"feb_sm_qty":29,"feb_sm_sales":333.6,"mar_kr_qty":85,"mar_kr_sales":1020.0,"mar_sm_qty":49,"mar_sm_sales":582.0,"apr_kr_qty":61,"apr_kr_sales":732.0,"apr_sm_qty":22,"apr_sm_sales":264.0,"total_qty":334,"total_sales":3975.6},{"item":"Granola Yogurt","feb_kr_qty":287,"feb_kr_sales":951.99,"feb_sm_qty":115,"feb_sm_sales":370.2,"mar_kr_qty":326,"mar_kr_sales":1115.88,"mar_sm_qty":121,"mar_sm_sales":438.37,"apr_kr_qty":229,"apr_kr_sales":764.41,"apr_sm_qty":84,"apr_sm_sales":271.51,"total_qty":1162,"total_sales":3912.36},{"item":"Matcha Latte Oat Milk","feb_kr_qty":334,"feb_kr_sales":1266.26,"feb_sm_qty":62,"feb_sm_sales":213.0,"mar_kr_qty":380,"mar_kr_sales":1490.4,"mar_sm_qty":67,"mar_sm_sales":228.2,"apr_kr_qty":162,"apr_kr_sales":614.76,"apr_sm_qty":30,"apr_sm_sales":98.2,"total_qty":1035,"total_sales":3910.82},{"item":"Fried Eggs","feb_kr_qty":92,"feb_kr_sales":1103.12,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":133,"mar_kr_sales":1642.13,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":93,"apr_kr_sales":1102.55,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":318,"total_sales":3847.8},{"item":"Orange Juice","feb_kr_qty":408,"feb_kr_sales":927.6,"feb_sm_qty":163,"feb_sm_sales":367.23,"mar_kr_qty":514,"mar_kr_sales":1226.85,"mar_sm_qty":212,"mar_sm_sales":375.6,"apr_kr_qty":297,"apr_kr_sales":662.25,"apr_sm_qty":128,"apr_sm_sales":269.7,"total_qty":1722,"total_sales":3829.23},{"item":"Hot Chocolate Whole Milk","feb_kr_qty":436,"feb_kr_sales":1199.23,"feb_sm_qty":197,"feb_sm_sales":568.35,"mar_kr_qty":340,"mar_kr_sales":947.4,"mar_sm_qty":146,"mar_sm_sales":388.2,"apr_kr_qty":175,"apr_kr_sales":482.7,"apr_sm_qty":77,"apr_sm_sales":210.15,"total_qty":1371,"total_sales":3796.03},{"item":"Nutella beignet","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":832,"mar_kr_sales":2720.31,"mar_sm_qty":308,"mar_sm_sales":882.74,"apr_kr_qty":20,"apr_kr_sales":47.53,"apr_sm_qty":11,"apr_sm_sales":36.05,"total_qty":1171,"total_sales":3686.63},{"item":"Sourdough Bread","feb_kr_qty":269,"feb_kr_sales":1047.0,"feb_sm_qty":78,"feb_sm_sales":296.6,"mar_kr_qty":293,"mar_kr_sales":1152.0,"mar_sm_qty":72,"mar_sm_sales":274.6,"apr_kr_qty":161,"apr_kr_sales":628.4,"apr_sm_qty":39,"apr_sm_sales":155.2,"total_qty":912,"total_sales":3553.8},{"item":"Apple Tart","feb_kr_qty":486,"feb_kr_sales":944.79,"feb_sm_qty":191,"feb_sm_sales":359.7,"mar_kr_qty":568,"mar_kr_sales":1117.2,"mar_sm_qty":191,"mar_sm_sales":352.1,"apr_kr_qty":281,"apr_kr_sales":531.59,"apr_sm_qty":122,"apr_sm_sales":219.6,"total_qty":1839,"total_sales":3524.98},{"item":"Iced Latte-Oat Milk","feb_kr_qty":217,"feb_kr_sales":712.89,"feb_sm_qty":50,"feb_sm_sales":116.6,"mar_kr_qty":353,"mar_kr_sales":1266.2,"mar_sm_qty":100,"mar_sm_sales":231.4,"apr_kr_qty":275,"apr_kr_sales":990.0,"apr_sm_qty":103,"apr_sm_sales":197.2,"total_qty":1098,"total_sales":3514.29},{"item":"Espresso Double Shot","feb_kr_qty":235,"feb_kr_sales":620.63,"feb_sm_qty":193,"feb_sm_sales":531.3,"mar_kr_qty":351,"mar_kr_sales":977.48,"mar_sm_qty":224,"mar_sm_sales":586.74,"apr_kr_qty":181,"apr_kr_sales":494.76,"apr_sm_qty":101,"apr_sm_sales":249.9,"total_qty":1285,"total_sales":3460.81},{"item":"Flat White Semi Skimmed","feb_kr_qty":317,"feb_kr_sales":1047.72,"feb_sm_qty":49,"feb_sm_sales":164.15,"mar_kr_qty":379,"mar_kr_sales":1263.15,"mar_sm_qty":42,"mar_sm_sales":146.3,"apr_kr_qty":210,"apr_kr_sales":694.75,"apr_sm_qty":26,"apr_sm_sales":89.25,"total_qty":1023,"total_sales":3405.32},{"item":"Apple Kouign amann","feb_kr_qty":246,"feb_kr_sales":731.7,"feb_sm_qty":122,"feb_sm_sales":313.18,"mar_kr_qty":364,"mar_kr_sales":1085.4,"mar_sm_qty":174,"mar_sm_sales":424.33,"apr_kr_qty":181,"apr_kr_sales":540.0,"apr_sm_qty":86,"apr_sm_sales":238.95,"total_qty":1173,"total_sales":3333.56},{"item":"Latte Semi-Skimmed Milk","feb_kr_qty":271,"feb_kr_sales":1069.6,"feb_sm_qty":54,"feb_sm_sales":206.6,"mar_kr_qty":292,"mar_kr_sales":1117.2,"mar_sm_qty":39,"mar_sm_sales":151.0,"apr_kr_qty":160,"apr_kr_sales":636.0,"apr_sm_qty":28,"apr_sm_sales":107.6,"total_qty":844,"total_sales":3288.0},{"item":"Filter Coffee","feb_kr_qty":208,"feb_kr_sales":724.5,"feb_sm_qty":140,"feb_sm_sales":482.64,"mar_kr_qty":241,"mar_kr_sales":830.89,"mar_sm_qty":153,"mar_sm_sales":501.54,"apr_kr_qty":123,"apr_kr_sales":422.62,"apr_sm_qty":89,"apr_sm_sales":307.13,"total_qty":954,"total_sales":3269.32},{"item":"Croque Madame","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":24,"feb_sm_sales":261.0,"mar_kr_qty":121,"mar_kr_sales":1372.2,"mar_sm_qty":58,"mar_sm_sales":648.72,"apr_kr_qty":56,"apr_kr_sales":648.17,"apr_sm_qty":19,"apr_sm_sales":228.0,"total_qty":278,"total_sales":3158.09},{"item":"Apple Carrots Ginger juice","feb_kr_qty":323,"feb_kr_sales":900.0,"feb_sm_qty":99,"feb_sm_sales":249.4,"mar_kr_qty":393,"mar_kr_sales":1095.16,"mar_sm_qty":106,"mar_sm_sales":222.2,"apr_kr_qty":238,"apr_kr_sales":561.6,"apr_sm_qty":61,"apr_sm_sales":111.6,"total_qty":1220,"total_sales":3139.96},{"item":"Chablis 2023 Glass","feb_kr_qty":82,"feb_kr_sales":834.75,"feb_sm_qty":166,"feb_sm_sales":1719.32,"mar_kr_qty":40,"mar_kr_sales":409.5,"mar_sm_qty":10,"mar_sm_sales":105.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":298,"total_sales":3068.57},{"item":"English Breakfast Milk","feb_kr_qty":290,"feb_kr_sales":795.0,"feb_sm_qty":162,"feb_sm_sales":484.95,"mar_kr_qty":278,"mar_kr_sales":780.0,"mar_sm_qty":131,"mar_sm_sales":386.25,"apr_kr_qty":144,"apr_kr_sales":400.5,"apr_sm_qty":72,"apr_sm_sales":213.9,"total_qty":1077,"total_sales":3060.6},{"item":"Salmon Salad","feb_kr_qty":65,"feb_kr_sales":924.9,"feb_sm_qty":12,"feb_sm_sales":135.0,"mar_kr_qty":80,"mar_kr_sales":1186.5,"mar_sm_qty":8,"mar_sm_sales":120.0,"apr_kr_qty":31,"apr_kr_sales":461.25,"apr_sm_qty":9,"apr_sm_sales":131.25,"total_qty":205,"total_sales":2958.9},{"item":"Matcha Latte Whole Milk","feb_kr_qty":248,"feb_kr_sales":902.99,"feb_sm_qty":70,"feb_sm_sales":264.2,"mar_kr_qty":270,"mar_kr_sales":954.4,"mar_sm_qty":78,"mar_sm_sales":299.2,"apr_kr_qty":110,"apr_kr_sales":400.0,"apr_sm_qty":43,"apr_sm_sales":132.0,"total_qty":819,"total_sales":2952.79},{"item":"Mint Tea","feb_kr_qty":336,"feb_kr_sales":828.0,"feb_sm_qty":145,"feb_sm_sales":417.45,"mar_kr_qty":351,"mar_kr_sales":872.7,"mar_sm_qty":119,"mar_sm_sales":296.1,"apr_kr_qty":166,"apr_kr_sales":365.7,"apr_sm_qty":51,"apr_sm_sales":123.0,"total_qty":1168,"total_sales":2902.95},{"item":"Assiette 4 fromages","feb_kr_qty":21,"feb_kr_sales":342.0,"feb_sm_qty":55,"feb_sm_sales":970.01,"mar_kr_qty":25,"mar_kr_sales":364.0,"mar_sm_qty":46,"mar_sm_sales":828.0,"apr_kr_qty":13,"apr_kr_sales":180.0,"apr_sm_qty":11,"apr_sm_sales":198.0,"total_qty":171,"total_sales":2882.01},{"item":"Olive Oil bottle 500ml","feb_kr_qty":54,"feb_kr_sales":801.75,"feb_sm_qty":7,"feb_sm_sales":105.0,"mar_kr_qty":68,"mar_kr_sales":978.0,"mar_sm_qty":18,"mar_sm_sales":259.5,"apr_kr_qty":39,"apr_kr_sales":512.25,"apr_sm_qty":10,"apr_sm_sales":148.5,"total_qty":196,"total_sales":2805.0},{"item":"Iced Coffee","feb_kr_qty":233,"feb_kr_sales":445.16,"feb_sm_qty":66,"feb_sm_sales":151.95,"mar_kr_qty":369,"mar_kr_sales":807.3,"mar_sm_qty":136,"mar_sm_sales":300.0,"apr_kr_qty":325,"apr_kr_sales":737.4,"apr_sm_qty":87,"apr_sm_sales":162.45,"total_qty":1216,"total_sales":2604.26},{"item":"Cortado Whole Milk","feb_kr_qty":200,"feb_kr_sales":597.3,"feb_sm_qty":112,"feb_sm_sales":280.8,"mar_kr_qty":267,"mar_kr_sales":784.5,"mar_sm_qty":99,"mar_sm_sales":293.25,"apr_kr_qty":131,"apr_kr_sales":389.4,"apr_sm_qty":62,"apr_sm_sales":182.25,"total_qty":871,"total_sales":2527.5},{"item":"Petit Chemarin Glass 14cl","feb_kr_qty":41,"feb_kr_sales":588.75,"feb_sm_qty":66,"feb_sm_sales":990.0,"mar_kr_qty":28,"mar_kr_sales":405.0,"mar_sm_qty":34,"mar_sm_sales":510.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":169,"total_sales":2493.75},{"item":"Ginger Shot","feb_kr_qty":393,"feb_kr_sales":703.75,"feb_sm_qty":97,"feb_sm_sales":190.5,"mar_kr_qty":498,"mar_kr_sales":929.75,"mar_sm_qty":92,"mar_sm_sales":138.25,"apr_kr_qty":273,"apr_kr_sales":452.0,"apr_sm_qty":57,"apr_sm_sales":69.44,"total_qty":1410,"total_sales":2483.69},{"item":"White Americano Whole","feb_kr_qty":194,"feb_kr_sales":568.5,"feb_sm_qty":105,"feb_sm_sales":312.45,"mar_kr_qty":251,"mar_kr_sales":734.1,"mar_sm_qty":84,"mar_sm_sales":233.4,"apr_kr_qty":151,"apr_kr_sales":451.5,"apr_sm_qty":52,"apr_sm_sales":153.0,"total_qty":837,"total_sales":2452.95},{"item":"Pain Suisse","feb_kr_qty":507,"feb_kr_sales":1434.31,"feb_sm_qty":325,"feb_sm_sales":810.6,"mar_kr_qty":5,"mar_kr_sales":15.0,"mar_sm_qty":9,"mar_sm_sales":17.83,"apr_kr_qty":13,"apr_kr_sales":38.7,"apr_sm_qty":1,"apr_sm_sales":3.0,"total_qty":860,"total_sales":2319.44},{"item":"Cappuccino Semi-Skimmed","feb_kr_qty":256,"feb_kr_sales":873.6,"feb_sm_qty":29,"feb_sm_sales":101.5,"mar_kr_qty":226,"mar_kr_sales":776.65,"mar_sm_qty":33,"mar_sm_sales":115.5,"apr_kr_qty":116,"apr_kr_sales":394.69,"apr_sm_qty":11,"apr_sm_sales":38.5,"total_qty":671,"total_sales":2300.44},{"item":"Hat","feb_kr_qty":22,"feb_kr_sales":280.5,"feb_sm_qty":12,"feb_sm_sales":156.0,"mar_kr_qty":73,"mar_kr_sales":940.0,"mar_sm_qty":8,"mar_sm_sales":103.0,"apr_kr_qty":51,"apr_kr_sales":652.5,"apr_sm_qty":5,"apr_sm_sales":65.0,"total_qty":171,"total_sales":2197.0},{"item":"Still Water Bottle","feb_kr_qty":357,"feb_kr_sales":609.32,"feb_sm_qty":53,"feb_sm_sales":93.0,"mar_kr_qty":412,"mar_kr_sales":741.2,"mar_sm_qty":62,"mar_sm_sales":119.0,"apr_kr_qty":288,"apr_kr_sales":491.0,"apr_sm_qty":31,"apr_sm_sales":57.8,"total_qty":1203,"total_sales":2111.32},{"item":"Mango Chia","feb_kr_qty":57,"feb_kr_sales":160.0,"feb_sm_qty":45,"feb_sm_sales":113.7,"mar_kr_qty":289,"mar_kr_sales":843.65,"mar_sm_qty":116,"mar_sm_sales":264.59,"apr_kr_qty":203,"apr_kr_sales":576.11,"apr_sm_qty":68,"apr_sm_sales":129.5,"total_qty":778,"total_sales":2087.55},{"item":"Champagne Cossy Glass 125ml","feb_kr_qty":67,"feb_kr_sales":731.5,"feb_sm_qty":87,"feb_sm_sales":952.6,"mar_kr_qty":34,"mar_kr_sales":368.5,"mar_sm_qty":2,"mar_sm_sales":22.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":190,"total_sales":2074.6},{"item":"Mocha Whole Milk","feb_kr_qty":175,"feb_kr_sales":633.6,"feb_sm_qty":79,"feb_sm_sales":294.8,"mar_kr_qty":150,"mar_kr_sales":573.24,"mar_sm_qty":63,"mar_sm_sales":243.0,"apr_kr_qty":54,"apr_kr_sales":198.4,"apr_sm_qty":18,"apr_sm_sales":68.0,"total_qty":539,"total_sales":2011.04},{"item":"Morgon \"Les Charmes\" Glass","feb_kr_qty":46,"feb_kr_sales":460.0,"feb_sm_qty":116,"feb_sm_sales":1157.45,"mar_kr_qty":29,"mar_kr_sales":275.0,"mar_sm_qty":6,"mar_sm_sales":60.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":197,"total_sales":1952.45},{"item":"Fruit Bread","feb_kr_qty":107,"feb_kr_sales":621.0,"feb_sm_qty":17,"feb_sm_sales":102.0,"mar_kr_qty":99,"mar_kr_sales":566.4,"mar_sm_qty":17,"mar_sm_sales":102.0,"apr_kr_qty":48,"apr_kr_sales":272.4,"apr_sm_qty":14,"apr_sm_sales":78.0,"total_qty":302,"total_sales":1741.8},{"item":"Les Sardines Glass 140ml","feb_kr_qty":17,"feb_kr_sales":209.25,"feb_sm_qty":40,"feb_sm_sales":534.6,"mar_kr_qty":25,"mar_kr_sales":317.25,"mar_sm_qty":27,"mar_sm_sales":359.1,"apr_kr_qty":13,"apr_kr_sales":168.75,"apr_sm_qty":8,"apr_sm_sales":108.0,"total_qty":130,"total_sales":1696.95},{"item":"Petit Chemarin Glass","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":28,"mar_kr_sales":397.5,"mar_sm_qty":31,"mar_sm_sales":462.0,"apr_kr_qty":29,"apr_kr_sales":397.5,"apr_sm_qty":29,"apr_sm_sales":435.0,"total_qty":117,"total_sales":1692.0},{"item":"Ventoux Rouge, \"Sur Le Fil\" Glass","feb_kr_qty":23,"feb_kr_sales":220.0,"feb_sm_qty":74,"feb_sm_sales":735.69,"mar_kr_qty":12,"mar_kr_sales":115.0,"mar_sm_qty":41,"mar_sm_sales":409.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":19,"apr_sm_sales":188.0,"total_qty":169,"total_sales":1667.69},{"item":"Iced Matcha Oat Milk","feb_kr_qty":149,"feb_kr_sales":351.6,"feb_sm_qty":23,"feb_sm_sales":30.0,"mar_kr_qty":216,"mar_kr_sales":619.6,"mar_sm_qty":56,"mar_sm_sales":79.0,"apr_kr_qty":190,"apr_kr_sales":539.6,"apr_sm_qty":22,"apr_sm_sales":35.2,"total_qty":656,"total_sales":1655.0},{"item":"Côtes de Provence, Minuty Glass","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":39,"mar_kr_sales":272.0,"mar_sm_qty":51,"mar_sm_sales":408.0,"apr_kr_qty":37,"apr_kr_sales":256.0,"apr_sm_qty":86,"apr_sm_sales":688.0,"total_qty":213,"total_sales":1624.0},{"item":"Mâcon-Milly-Lamartine Glass","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":24,"mar_kr_sales":202.5,"mar_sm_qty":52,"mar_sm_sales":468.0,"apr_kr_qty":57,"apr_kr_sales":427.5,"apr_sm_qty":55,"apr_sm_sales":493.2,"total_qty":188,"total_sales":1591.2},{"item":"Sparkling Water Bottle","feb_kr_qty":219,"feb_kr_sales":376.61,"feb_sm_qty":43,"feb_sm_sales":81.8,"mar_kr_qty":307,"mar_kr_sales":565.7,"mar_sm_qty":65,"mar_sm_sales":126.0,"apr_kr_qty":206,"apr_kr_sales":363.8,"apr_sm_qty":36,"apr_sm_sales":72.0,"total_qty":876,"total_sales":1585.91},{"item":"Rosé Pomponette Glass 140ml","feb_kr_qty":46,"feb_kr_sales":556.25,"feb_sm_qty":51,"feb_sm_sales":635.0,"mar_kr_qty":22,"mar_kr_sales":268.75,"mar_sm_qty":8,"mar_sm_sales":100.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":127,"total_sales":1560.0},{"item":"Les Perrieres Mâcon Rouge Glass","feb_kr_qty":50,"feb_kr_sales":485.0,"feb_sm_qty":86,"feb_sm_sales":860.0,"mar_kr_qty":22,"mar_kr_sales":215.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":158,"total_sales":1560.0},{"item":"Espresso Single Shot","feb_kr_qty":191,"feb_kr_sales":514.64,"feb_sm_qty":21,"feb_sm_sales":55.58,"mar_kr_qty":205,"mar_kr_sales":546.84,"mar_sm_qty":33,"mar_sm_sales":70.0,"apr_kr_qty":120,"apr_kr_sales":327.32,"apr_sm_qty":16,"apr_sm_sales":44.52,"total_qty":586,"total_sales":1558.9},{"item":"Iced Matcha Whole Milk","feb_kr_qty":163,"feb_kr_sales":385.96,"feb_sm_qty":40,"feb_sm_sales":90.8,"mar_kr_qty":206,"mar_kr_sales":572.32,"mar_sm_qty":65,"mar_sm_sales":94.8,"apr_kr_qty":130,"apr_kr_sales":354.0,"apr_sm_qty":25,"apr_sm_sales":50.6,"total_qty":629,"total_sales":1548.48},{"item":"3 bruschetta","feb_kr_qty":34,"feb_kr_sales":134.0,"feb_sm_qty":90,"feb_sm_sales":359.6,"mar_kr_qty":62,"mar_kr_sales":202.0,"mar_sm_qty":119,"mar_sm_sales":474.4,"apr_kr_qty":36,"apr_kr_sales":102.0,"apr_sm_qty":69,"apr_sm_sales":275.2,"total_qty":410,"total_sales":1547.2},{"item":"Granola Bowl Strawberry","feb_kr_qty":55,"feb_kr_sales":432.0,"feb_sm_qty":21,"feb_sm_sales":166.0,"mar_kr_qty":40,"mar_kr_sales":308.0,"mar_sm_qty":35,"mar_sm_sales":274.0,"apr_kr_qty":25,"apr_kr_sales":200.0,"apr_sm_qty":15,"apr_sm_sales":119.2,"total_qty":191,"total_sales":1499.2},{"item":"Large Cappuccino","feb_kr_qty":117,"feb_kr_sales":458.8,"feb_sm_qty":14,"feb_sm_sales":50.4,"mar_kr_qty":119,"mar_kr_sales":471.0,"mar_sm_qty":19,"mar_sm_sales":75.2,"apr_kr_qty":98,"apr_kr_sales":389.6,"apr_sm_qty":12,"apr_sm_sales":47.6,"total_qty":379,"total_sales":1492.6},{"item":"Ricotta, Walnuts & Honey","feb_kr_qty":14,"feb_kr_sales":130.0,"feb_sm_qty":36,"feb_sm_sales":360.0,"mar_kr_qty":22,"mar_kr_sales":205.0,"mar_sm_qty":44,"mar_sm_sales":440.0,"apr_kr_qty":16,"apr_kr_sales":150.0,"apr_sm_qty":16,"apr_sm_sales":160.0,"total_qty":148,"total_sales":1445.0},{"item":"Basket Bread","feb_kr_qty":34,"feb_kr_sales":204.0,"feb_sm_qty":43,"feb_sm_sales":252.0,"mar_kr_qty":63,"mar_kr_sales":366.0,"mar_sm_qty":60,"mar_sm_sales":360.0,"apr_kr_qty":24,"apr_kr_sales":142.5,"apr_sm_qty":19,"apr_sm_sales":114.0,"total_qty":243,"total_sales":1438.5},{"item":"Green Tea","feb_kr_qty":144,"feb_kr_sales":369.0,"feb_sm_qty":50,"feb_sm_sales":142.5,"mar_kr_qty":170,"mar_kr_sales":458.7,"mar_sm_qty":56,"mar_sm_sales":152.7,"apr_kr_qty":90,"apr_kr_sales":254.25,"apr_sm_qty":22,"apr_sm_sales":56.1,"total_qty":532,"total_sales":1433.25},{"item":"French Saucisson","feb_kr_qty":17,"feb_kr_sales":180.0,"feb_sm_qty":39,"feb_sm_sales":465.6,"mar_kr_qty":21,"mar_kr_sales":222.0,"mar_sm_qty":20,"mar_sm_sales":240.0,"apr_kr_qty":12,"apr_kr_sales":114.0,"apr_sm_qty":13,"apr_sm_sales":156.0,"total_qty":122,"total_sales":1377.6},{"item":"Chai Latte Whole Milk","feb_kr_qty":82,"feb_kr_sales":276.0,"feb_sm_qty":64,"feb_sm_sales":254.4,"mar_kr_qty":103,"mar_kr_sales":336.0,"mar_sm_qty":56,"mar_sm_sales":207.0,"apr_kr_qty":51,"apr_kr_sales":148.0,"apr_sm_qty":28,"apr_sm_sales":105.6,"total_qty":384,"total_sales":1327.0},{"item":"Seeds Bread","feb_kr_qty":87,"feb_kr_sales":344.0,"feb_sm_qty":21,"feb_sm_sales":77.6,"mar_kr_qty":123,"mar_kr_sales":463.89,"mar_sm_qty":20,"mar_sm_sales":80.0,"apr_kr_qty":65,"apr_kr_sales":252.0,"apr_sm_qty":19,"apr_sm_sales":76.0,"total_qty":335,"total_sales":1293.49},{"item":"Lobster Rolls","feb_kr_qty":12,"feb_kr_sales":240.0,"feb_sm_qty":14,"feb_sm_sales":280.0,"mar_kr_qty":25,"mar_kr_sales":430.0,"mar_sm_qty":8,"mar_sm_sales":160.0,"apr_kr_qty":6,"apr_kr_sales":120.0,"apr_sm_qty":3,"apr_sm_sales":60.0,"total_qty":68,"total_sales":1290.0},{"item":"Choux chantilly","feb_kr_qty":182,"feb_kr_sales":346.8,"feb_sm_qty":85,"feb_sm_sales":155.6,"mar_kr_qty":163,"mar_kr_sales":319.4,"mar_sm_qty":89,"mar_sm_sales":142.29,"apr_kr_qty":103,"apr_kr_sales":199.4,"apr_sm_qty":70,"apr_sm_sales":125.6,"total_qty":692,"total_sales":1289.09},{"item":"Choux Caramel","feb_kr_qty":187,"feb_kr_sales":350.66,"feb_sm_qty":113,"feb_sm_sales":191.5,"mar_kr_qty":157,"mar_kr_sales":311.8,"mar_sm_qty":94,"mar_sm_sales":139.2,"apr_kr_qty":93,"apr_kr_sales":186.0,"apr_sm_qty":75,"apr_sm_sales":105.0,"total_qty":719,"total_sales":1284.16},{"item":"Little Sourdough","feb_kr_qty":129,"feb_kr_sales":252.2,"feb_sm_qty":82,"feb_sm_sales":156.6,"mar_kr_qty":182,"mar_kr_sales":360.0,"mar_sm_qty":82,"mar_sm_sales":159.0,"apr_kr_qty":107,"apr_kr_sales":208.0,"apr_sm_qty":42,"apr_sm_sales":83.8,"total_qty":624,"total_sales":1219.6},{"item":"olive oil 250 ml","feb_kr_qty":58,"feb_kr_sales":423.0,"feb_sm_qty":12,"feb_sm_sales":88.87,"mar_kr_qty":55,"mar_kr_sales":394.12,"mar_sm_qty":11,"mar_sm_sales":82.5,"apr_kr_qty":22,"apr_kr_sales":150.75,"apr_sm_qty":10,"apr_sm_sales":72.37,"total_qty":168,"total_sales":1211.61},{"item":"Pizzette","feb_kr_qty":59,"feb_kr_sales":206.0,"feb_sm_qty":54,"feb_sm_sales":194.0,"mar_kr_qty":66,"mar_kr_sales":252.0,"mar_sm_qty":61,"mar_sm_sales":240.8,"apr_kr_qty":48,"apr_kr_sales":172.0,"apr_sm_qty":32,"apr_sm_sales":128.0,"total_qty":320,"total_sales":1192.8},{"item":"Macchiato whole milk","feb_kr_qty":131,"feb_kr_sales":350.0,"feb_sm_qty":41,"feb_sm_sales":117.0,"mar_kr_qty":130,"mar_kr_sales":351.4,"mar_sm_qty":41,"mar_sm_sales":108.3,"apr_kr_qty":59,"apr_kr_sales":156.8,"apr_sm_qty":31,"apr_sm_sales":88.5,"total_qty":433,"total_sales":1172.0},{"item":"Strawberry Baguette","feb_kr_qty":195,"feb_kr_sales":372.4,"feb_sm_qty":41,"feb_sm_sales":82.0,"mar_kr_qty":217,"mar_kr_sales":388.35,"mar_sm_qty":37,"mar_sm_sales":74.0,"apr_kr_qty":122,"apr_kr_sales":192.87,"apr_sm_qty":27,"apr_sm_sales":52.0,"total_qty":639,"total_sales":1161.62},{"item":"Champagne \"Cuvée Prestige\" Glass","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":13,"mar_kr_sales":138.0,"mar_sm_qty":15,"mar_sm_sales":172.5,"apr_kr_qty":44,"apr_kr_sales":506.0,"apr_sm_qty":29,"apr_sm_sales":333.5,"total_qty":101,"total_sales":1150.0},{"item":"Nicouse Salad","feb_kr_qty":85,"feb_kr_sales":360.0,"feb_sm_qty":12,"feb_sm_sales":96.0,"mar_kr_qty":82,"mar_kr_sales":352.84,"mar_sm_qty":13,"mar_sm_sales":82.0,"apr_kr_qty":48,"apr_kr_sales":207.57,"apr_sm_qty":7,"apr_sm_sales":50.0,"total_qty":247,"total_sales":1148.41},{"item":"Olive Bowl","feb_kr_qty":33,"feb_kr_sales":162.5,"feb_sm_qty":59,"feb_sm_sales":294.95,"mar_kr_qty":37,"mar_kr_sales":172.5,"mar_sm_qty":46,"mar_sm_sales":229.0,"apr_kr_qty":11,"apr_kr_sales":50.0,"apr_sm_qty":39,"apr_sm_sales":195.0,"total_qty":225,"total_sales":1103.95},{"item":"White Americano Oat Milk","feb_kr_qty":98,"feb_kr_sales":279.0,"feb_sm_qty":43,"feb_sm_sales":127.2,"mar_kr_qty":125,"mar_kr_sales":365.7,"mar_sm_qty":37,"mar_sm_sales":108.6,"apr_kr_qty":54,"apr_kr_sales":141.0,"apr_sm_qty":26,"apr_sm_sales":73.35,"total_qty":383,"total_sales":1094.85},{"item":"Champagne SM Glass 125ml","feb_kr_qty":29,"feb_kr_sales":364.0,"feb_sm_qty":18,"feb_sm_sales":234.0,"mar_kr_qty":23,"mar_kr_sales":299.0,"mar_sm_qty":17,"mar_sm_sales":197.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":87,"total_sales":1094.0},{"item":"Stracciatella tomato Salad","feb_kr_qty":13,"feb_kr_sales":208.0,"feb_sm_qty":20,"feb_sm_sales":320.0,"mar_kr_qty":10,"mar_kr_sales":130.0,"mar_sm_qty":11,"mar_sm_sales":176.0,"apr_kr_qty":11,"apr_kr_sales":154.0,"apr_sm_qty":6,"apr_sm_sales":96.0,"total_qty":71,"total_sales":1084.0},{"item":"Lemonade Karma","feb_kr_qty":82,"feb_kr_sales":198.0,"feb_sm_qty":37,"feb_sm_sales":110.7,"mar_kr_qty":123,"mar_kr_sales":275.25,"mar_sm_qty":34,"mar_sm_sales":98.1,"apr_kr_qty":124,"apr_kr_sales":276.0,"apr_sm_qty":36,"apr_sm_sales":107.4,"total_qty":436,"total_sales":1065.45},{"item":"Earl Grey","feb_kr_qty":95,"feb_kr_sales":276.0,"feb_sm_qty":40,"feb_sm_sales":117.0,"mar_kr_qty":117,"mar_kr_sales":344.7,"mar_sm_qty":36,"mar_sm_sales":108.0,"apr_kr_qty":57,"apr_kr_sales":140.81,"apr_sm_qty":22,"apr_sm_sales":66.0,"total_qty":367,"total_sales":1052.51},{"item":"Domaine de Ferrand 2021 Glass","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":15,"mar_kr_sales":210.0,"mar_sm_qty":22,"mar_sm_sales":330.0,"apr_kr_qty":7,"apr_kr_sales":105.0,"apr_sm_qty":27,"apr_sm_sales":405.0,"total_qty":71,"total_sales":1050.0},{"item":"Champagne \"Cœur de Village\" Glass 2019","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":14,"mar_kr_sales":175.5,"mar_sm_qty":23,"mar_sm_sales":310.5,"apr_kr_qty":14,"apr_kr_sales":162.0,"apr_sm_qty":25,"apr_sm_sales":337.5,"total_qty":76,"total_sales":985.5},{"item":"Crozes-Hermitages 2021 Glass","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":25,"mar_kr_sales":207.0,"mar_sm_qty":31,"mar_sm_sales":279.0,"apr_kr_qty":25,"apr_kr_sales":175.5,"apr_sm_qty":35,"apr_sm_sales":315.0,"total_qty":116,"total_sales":976.5},{"item":"Crepe Caramel","feb_kr_qty":39,"feb_kr_sales":270.9,"feb_sm_qty":15,"feb_sm_sales":98.0,"mar_kr_qty":36,"mar_kr_sales":245.3,"mar_sm_qty":12,"mar_sm_sales":78.0,"apr_kr_qty":32,"apr_kr_sales":223.3,"apr_sm_qty":6,"apr_sm_sales":42.0,"total_qty":140,"total_sales":957.5},{"item":"Salmon Bruschetta","feb_kr_qty":29,"feb_kr_sales":137.5,"feb_sm_qty":40,"feb_sm_sales":198.0,"mar_kr_qty":35,"mar_kr_sales":155.0,"mar_sm_qty":51,"mar_sm_sales":255.0,"apr_kr_qty":13,"apr_kr_sales":64.0,"apr_sm_qty":30,"apr_sm_sales":148.0,"total_qty":198,"total_sales":957.5},{"item":"English Breakfast","feb_kr_qty":83,"feb_kr_sales":246.0,"feb_sm_qty":40,"feb_sm_sales":117.0,"mar_kr_qty":96,"mar_kr_sales":284.7,"mar_sm_qty":34,"mar_sm_sales":101.7,"apr_kr_qty":46,"apr_kr_sales":126.0,"apr_sm_qty":22,"apr_sm_sales":66.0,"total_qty":321,"total_sales":941.4},{"item":"Straight 2023Glass","feb_kr_qty":15,"feb_kr_sales":188.5,"feb_sm_qty":42,"feb_sm_sales":545.73,"mar_kr_qty":15,"mar_kr_sales":175.5,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":72,"total_sales":909.73},{"item":"Chablis 2023 Bottle","feb_kr_qty":3,"feb_kr_sales":132.5,"feb_sm_qty":12,"feb_sm_sales":636.0,"mar_kr_qty":3,"mar_kr_sales":132.5,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":18,"total_sales":901.0},{"item":"Camden Pint","feb_kr_qty":36,"feb_kr_sales":234.0,"feb_sm_qty":21,"feb_sm_sales":135.2,"mar_kr_qty":42,"mar_kr_sales":247.0,"mar_sm_qty":11,"mar_sm_sales":71.5,"apr_kr_qty":21,"apr_kr_sales":107.25,"apr_sm_qty":17,"apr_sm_sales":104.0,"total_qty":148,"total_sales":898.95},{"item":"White Sourdough","feb_kr_qty":41,"feb_kr_sales":149.6,"feb_sm_qty":54,"feb_sm_sales":211.8,"mar_kr_qty":45,"mar_kr_sales":167.89,"mar_sm_qty":44,"mar_sm_sales":172.2,"apr_kr_qty":22,"apr_kr_sales":76.0,"apr_sm_qty":27,"apr_sm_sales":105.0,"total_qty":233,"total_sales":882.49},{"item":"Chai Latte Oat Milk","feb_kr_qty":67,"feb_kr_sales":268.0,"feb_sm_qty":27,"feb_sm_sales":106.6,"mar_kr_qty":68,"mar_kr_sales":274.0,"mar_sm_qty":20,"mar_sm_sales":80.0,"apr_kr_qty":20,"apr_kr_sales":64.0,"apr_sm_qty":26,"apr_sm_sales":87.85,"total_qty":228,"total_sales":880.45},{"item":"Madeleine x10","feb_kr_qty":47,"feb_kr_sales":165.6,"feb_sm_qty":38,"feb_sm_sales":148.0,"mar_kr_qty":44,"mar_kr_sales":162.6,"mar_sm_qty":45,"mar_sm_sales":168.4,"apr_kr_qty":37,"apr_kr_sales":120.0,"apr_sm_qty":29,"apr_sm_sales":111.6,"total_qty":240,"total_sales":876.2},{"item":"Beetroot salad","feb_kr_qty":63,"feb_kr_sales":300.0,"feb_sm_qty":17,"feb_sm_sales":54.9,"mar_kr_qty":56,"mar_kr_sales":278.13,"mar_sm_qty":22,"mar_sm_sales":66.73,"apr_kr_qty":33,"apr_kr_sales":144.86,"apr_sm_qty":10,"apr_sm_sales":24.0,"total_qty":201,"total_sales":868.62},{"item":"Cheese and Ham Toast","feb_kr_qty":18,"feb_kr_sales":105.0,"feb_sm_qty":23,"feb_sm_sales":136.8,"mar_kr_qty":41,"mar_kr_sales":219.0,"mar_sm_qty":37,"mar_sm_sales":220.8,"apr_kr_qty":19,"apr_kr_sales":102.0,"apr_sm_qty":14,"apr_sm_sales":84.0,"total_qty":152,"total_sales":867.6},{"item":"Marsannay Glass","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":6,"mar_kr_sales":60.0,"mar_sm_qty":13,"mar_sm_sales":195.0,"apr_kr_qty":22,"apr_kr_sales":292.5,"apr_sm_qty":21,"apr_sm_sales":312.0,"total_qty":62,"total_sales":859.5},{"item":"Mini Baguette","feb_kr_qty":194,"feb_kr_sales":185.6,"feb_sm_qty":10,"feb_sm_sales":9.0,"mar_kr_qty":374,"mar_kr_sales":357.5,"mar_sm_qty":3,"mar_sm_sales":3.0,"apr_kr_qty":294,"apr_kr_sales":286.75,"apr_sm_qty":9,"apr_sm_sales":9.0,"total_qty":884,"total_sales":850.85},{"item":"Iced Latte Semi Skimmed","feb_kr_qty":61,"feb_kr_sales":176.17,"feb_sm_qty":12,"feb_sm_sales":32.0,"mar_kr_qty":88,"mar_kr_sales":303.2,"mar_sm_qty":11,"mar_sm_sales":30.8,"apr_kr_qty":73,"apr_kr_sales":260.0,"apr_sm_qty":17,"apr_sm_sales":48.0,"total_qty":262,"total_sales":850.17},{"item":"Big brioche Classic","feb_kr_qty":16,"feb_kr_sales":73.24,"feb_sm_qty":43,"feb_sm_sales":196.5,"mar_kr_qty":38,"mar_kr_sales":183.24,"mar_sm_qty":39,"mar_sm_sales":192.0,"apr_kr_qty":23,"apr_kr_sales":105.0,"apr_sm_qty":20,"apr_sm_sales":99.5,"total_qty":179,"total_sales":849.48},{"item":"Le Haut des Champs Glass 140ml","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":103,"mar_sm_sales":813.6,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":3,"apr_sm_sales":24.0,"total_qty":106,"total_sales":837.6},{"item":"Earl Grey Milk","feb_kr_qty":104,"feb_kr_sales":258.0,"feb_sm_qty":34,"feb_sm_sales":102.0,"mar_kr_qty":77,"mar_kr_sales":194.7,"mar_sm_qty":32,"mar_sm_sales":95.1,"apr_kr_qty":51,"apr_kr_sales":119.25,"apr_sm_qty":17,"apr_sm_sales":50.1,"total_qty":315,"total_sales":819.15},{"item":"Anchovies and butter","feb_kr_qty":11,"feb_kr_sales":126.0,"feb_sm_qty":15,"feb_sm_sales":175.2,"mar_kr_qty":15,"mar_kr_sales":162.0,"mar_sm_qty":11,"mar_sm_sales":132.0,"apr_kr_qty":9,"apr_kr_sales":102.0,"apr_sm_qty":10,"apr_sm_sales":117.6,"total_qty":71,"total_sales":814.8},{"item":"Hot Chocolate-Oat Milk","feb_kr_qty":156,"feb_kr_sales":325.2,"feb_sm_qty":15,"feb_sm_sales":44.4,"mar_kr_qty":113,"mar_kr_sales":221.7,"mar_sm_qty":17,"mar_sm_sales":44.7,"apr_kr_qty":64,"apr_kr_sales":132.0,"apr_sm_qty":10,"apr_sm_sales":27.0,"total_qty":375,"total_sales":795.0},{"item":"MISC","feb_kr_qty":105,"feb_kr_sales":187.5,"feb_sm_qty":34,"feb_sm_sales":201.2,"mar_kr_qty":112,"mar_kr_sales":3.95,"mar_sm_qty":41,"mar_sm_sales":277.75,"apr_kr_qty":77,"apr_kr_sales":42.6,"apr_sm_qty":17,"apr_sm_sales":62.13,"total_qty":386,"total_sales":775.13},{"item":"Mocha Oat milk","feb_kr_qty":54,"feb_kr_sales":180.0,"feb_sm_qty":27,"feb_sm_sales":106.4,"mar_kr_qty":74,"mar_kr_sales":292.0,"mar_sm_qty":12,"mar_sm_sales":40.0,"apr_kr_qty":26,"apr_kr_sales":96.0,"apr_sm_qty":14,"apr_sm_sales":55.6,"total_qty":207,"total_sales":770.0},{"item":"Chia pudding","feb_kr_qty":178,"feb_kr_sales":565.51,"feb_sm_qty":59,"feb_sm_sales":190.57,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":237,"total_sales":756.08},{"item":"Rosé M Minuty Bottle","feb_kr_qty":1,"feb_kr_sales":48.0,"feb_sm_qty":6,"feb_sm_sales":288.0,"mar_kr_qty":1,"mar_kr_sales":48.0,"mar_sm_qty":9,"mar_sm_sales":360.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":17,"total_sales":744.0},{"item":"Domaine de l'enclos Chablis 2023 Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":5,"mar_kr_sales":212.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":4,"apr_kr_sales":212.0,"apr_sm_qty":6,"apr_sm_sales":318.0,"total_qty":15,"total_sales":742.0},{"item":"Khorasan Bread","feb_kr_qty":39,"feb_kr_sales":194.5,"feb_sm_qty":20,"feb_sm_sales":99.5,"mar_kr_qty":58,"mar_kr_sales":285.0,"mar_sm_qty":13,"mar_sm_sales":64.0,"apr_kr_qty":14,"apr_kr_sales":65.0,"apr_sm_qty":4,"apr_sm_sales":20.0,"total_qty":148,"total_sales":728.0},{"item":"Mâcon-Milly-Lamartine Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":2,"mar_kr_sales":45.0,"mar_sm_qty":7,"mar_sm_sales":315.0,"apr_kr_qty":1,"apr_kr_sales":45.0,"apr_sm_qty":7,"apr_sm_sales":315.0,"total_qty":17,"total_sales":720.0},{"item":"Tomato bread","feb_kr_qty":17,"feb_kr_sales":75.0,"feb_sm_qty":32,"feb_sm_sales":160.0,"mar_kr_qty":45,"mar_kr_sales":170.0,"mar_sm_qty":31,"mar_sm_sales":154.0,"apr_kr_qty":26,"apr_kr_sales":102.5,"apr_sm_qty":11,"apr_sm_sales":55.0,"total_qty":162,"total_sales":716.5},{"item":"Marsannay Rouge Glass 140ml","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":10,"mar_kr_sales":151.5,"mar_sm_qty":38,"mar_sm_sales":558.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":48,"total_sales":709.5},{"item":"1664 Blanche Pint","feb_kr_qty":12,"feb_kr_sales":70.0,"feb_sm_qty":23,"feb_sm_sales":139.65,"mar_kr_qty":38,"mar_kr_sales":210.0,"mar_sm_qty":13,"mar_sm_sales":86.1,"apr_kr_qty":21,"apr_kr_sales":101.5,"apr_sm_qty":17,"apr_sm_sales":99.4,"total_qty":124,"total_sales":706.65},{"item":"Filter Coffee Milk","feb_kr_qty":42,"feb_kr_sales":135.8,"feb_sm_qty":35,"feb_sm_sales":122.5,"mar_kr_qty":47,"mar_kr_sales":160.65,"mar_sm_qty":49,"mar_sm_sales":170.45,"apr_kr_qty":12,"apr_kr_sales":42.0,"apr_sm_qty":20,"apr_sm_sales":68.43,"total_qty":205,"total_sales":699.83},{"item":"Vanilla Syrup","feb_kr_qty":500,"feb_kr_sales":147.46,"feb_sm_qty":56,"feb_sm_sales":20.95,"mar_kr_qty":700,"mar_kr_sales":265.18,"mar_sm_qty":160,"mar_sm_sales":48.3,"apr_kr_qty":497,"apr_kr_sales":182.38,"apr_sm_qty":148,"apr_sm_sales":31.83,"total_qty":2061,"total_sales":696.1},{"item":"Guinness Beer Pint","feb_kr_qty":25,"feb_kr_sales":180.0,"feb_sm_qty":14,"feb_sm_sales":103.5,"mar_kr_qty":24,"mar_kr_sales":142.5,"mar_sm_qty":15,"mar_sm_sales":96.0,"apr_kr_qty":20,"apr_kr_sales":86.25,"apr_sm_qty":14,"apr_sm_sales":84.0,"total_qty":112,"total_sales":692.25},{"item":"Petit Chemarin Bottle","feb_kr_qty":1,"feb_kr_sales":75.0,"feb_sm_qty":2,"feb_sm_sales":135.0,"mar_kr_qty":3,"mar_kr_sales":112.5,"mar_sm_qty":2,"mar_sm_sales":150.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":3,"apr_sm_sales":210.0,"total_qty":11,"total_sales":682.5},{"item":"Champagne \"Cuvée Prestige\" 2005 Glass","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":31,"mar_kr_sales":364.0,"mar_sm_qty":27,"mar_sm_sales":310.5,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":58,"total_sales":674.5},{"item":"Lentil Salad","feb_kr_qty":61,"feb_kr_sales":312.72,"feb_sm_qty":11,"feb_sm_sales":30.0,"mar_kr_qty":47,"mar_kr_sales":249.0,"mar_sm_qty":18,"mar_sm_sales":67.5,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":137,"total_sales":659.22},{"item":"Bourgogne Cuvée des Ormes Glass","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":18,"mar_kr_sales":204.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":18,"apr_kr_sales":204.0,"apr_sm_qty":21,"apr_sm_sales":249.6,"total_qty":57,"total_sales":657.6},{"item":"Apricot Baguette","feb_kr_qty":96,"feb_kr_sales":187.6,"feb_sm_qty":21,"feb_sm_sales":41.92,"mar_kr_qty":107,"mar_kr_sales":209.8,"mar_sm_qty":35,"mar_sm_sales":69.6,"apr_kr_qty":59,"apr_kr_sales":104.3,"apr_sm_qty":22,"apr_sm_sales":44.0,"total_qty":340,"total_sales":657.22},{"item":"French Brioche","feb_kr_qty":39,"feb_kr_sales":72.0,"feb_sm_qty":20,"feb_sm_sales":40.0,"mar_kr_qty":150,"mar_kr_sales":290.0,"mar_sm_qty":59,"mar_sm_sales":107.0,"apr_kr_qty":63,"apr_kr_sales":120.9,"apr_sm_qty":15,"apr_sm_sales":26.0,"total_qty":346,"total_sales":655.9},{"item":"Mug st george","feb_kr_qty":23,"feb_kr_sales":180.0,"feb_sm_qty":3,"feb_sm_sales":21.2,"mar_kr_qty":18,"mar_kr_sales":136.0,"mar_sm_qty":9,"mar_sm_sales":67.43,"apr_kr_qty":22,"apr_kr_sales":166.0,"apr_sm_qty":9,"apr_sm_sales":72.0,"total_qty":84,"total_sales":642.63},{"item":"Granola Bowl Abricot","feb_kr_qty":16,"feb_kr_sales":128.0,"feb_sm_qty":13,"feb_sm_sales":102.93,"mar_kr_qty":20,"mar_kr_sales":154.0,"mar_sm_qty":13,"mar_sm_sales":104.0,"apr_kr_qty":7,"apr_kr_sales":56.0,"apr_sm_qty":10,"apr_sm_sales":78.4,"total_qty":79,"total_sales":623.33},{"item":"Rye Bread","feb_kr_qty":45,"feb_kr_sales":177.2,"feb_sm_qty":19,"feb_sm_sales":75.2,"mar_kr_qty":40,"mar_kr_sales":150.0,"mar_sm_qty":23,"mar_sm_sales":92.0,"apr_kr_qty":23,"apr_kr_sales":86.0,"apr_sm_qty":10,"apr_sm_sales":40.0,"total_qty":160,"total_sales":620.4},{"item":"Crème Brulée","feb_kr_qty":18,"feb_kr_sales":62.0,"feb_sm_qty":49,"feb_sm_sales":186.86,"mar_kr_qty":29,"mar_kr_sales":100.0,"mar_sm_qty":46,"mar_sm_sales":180.4,"apr_kr_qty":7,"apr_kr_sales":26.0,"apr_sm_qty":17,"apr_sm_sales":64.8,"total_qty":166,"total_sales":620.06},{"item":"Côtes de Provence, Minuty Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":2,"mar_kr_sales":20.0,"mar_sm_qty":9,"mar_sm_sales":360.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":6,"apr_sm_sales":240.0,"total_qty":17,"total_sales":620.0},{"item":"Pain au raisins","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":180,"apr_kr_sales":443.87,"apr_sm_qty":81,"apr_sm_sales":165.38,"total_qty":261,"total_sales":609.25},{"item":"Matcha Latte Semi Skimmed Milk","feb_kr_qty":73,"feb_kr_sales":224.0,"feb_sm_qty":1,"feb_sm_sales":4.0,"mar_kr_qty":65,"mar_kr_sales":224.0,"mar_sm_qty":2,"mar_sm_sales":8.0,"apr_kr_qty":36,"apr_kr_sales":140.0,"apr_sm_qty":2,"apr_sm_sales":8.0,"total_qty":179,"total_sales":608.0},{"item":"Tiramisu wine bar","feb_kr_qty":15,"feb_kr_sales":78.0,"feb_sm_qty":23,"feb_sm_sales":133.2,"mar_kr_qty":27,"mar_kr_sales":144.0,"mar_sm_qty":26,"mar_sm_sales":152.4,"apr_kr_qty":6,"apr_kr_sales":30.0,"apr_sm_qty":10,"apr_sm_sales":58.8,"total_qty":107,"total_sales":596.4},{"item":"Cortado Oat milk","feb_kr_qty":43,"feb_kr_sales":120.0,"feb_sm_qty":19,"feb_sm_sales":55.2,"mar_kr_qty":55,"mar_kr_sales":159.6,"mar_sm_qty":23,"mar_sm_sales":67.35,"apr_kr_qty":51,"apr_kr_sales":148.2,"apr_sm_qty":15,"apr_sm_sales":44.4,"total_qty":206,"total_sales":594.75},{"item":"Garlic bread","feb_kr_qty":23,"feb_kr_sales":84.0,"feb_sm_qty":35,"feb_sm_sales":139.2,"mar_kr_qty":24,"mar_kr_sales":70.0,"mar_sm_qty":39,"mar_sm_sales":155.2,"apr_kr_qty":21,"apr_kr_sales":54.0,"apr_sm_qty":17,"apr_sm_sales":68.0,"total_qty":159,"total_sales":570.4},{"item":"Hand Brew","feb_kr_qty":19,"feb_kr_sales":76.5,"feb_sm_qty":29,"feb_sm_sales":130.5,"mar_kr_qty":25,"mar_kr_sales":112.5,"mar_sm_qty":18,"mar_sm_sales":78.9,"apr_kr_qty":36,"apr_kr_sales":114.97,"apr_sm_qty":13,"apr_sm_sales":49.5,"total_qty":140,"total_sales":562.87},{"item":"Le Haut des Champs Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":14,"mar_sm_sales":552.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":14,"total_sales":552.0},{"item":"Les Perrieres Mâcon Rouge Bottle","feb_kr_qty":4,"feb_kr_sales":200.0,"feb_sm_qty":1,"feb_sm_sales":50.0,"mar_kr_qty":6,"mar_kr_sales":300.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":11,"total_sales":550.0},{"item":"Crozes-Hermitage Glasse","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":61,"mar_sm_sales":549.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":61,"total_sales":549.0},{"item":"Marsannay Rouge Bottle","feb_kr_qty":2,"feb_kr_sales":148.0,"feb_sm_qty":1,"feb_sm_sales":74.0,"mar_kr_qty":1,"mar_kr_sales":74.0,"mar_sm_qty":3,"mar_sm_sales":225.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":7,"total_sales":521.0},{"item":"Large Filter Coffee","feb_kr_qty":24,"feb_kr_sales":94.5,"feb_sm_qty":22,"feb_sm_sales":66.82,"mar_kr_qty":38,"mar_kr_sales":166.5,"mar_sm_qty":19,"mar_sm_sales":72.0,"apr_kr_qty":22,"apr_kr_sales":90.0,"apr_sm_qty":10,"apr_sm_sales":22.5,"total_qty":135,"total_sales":512.32},{"item":"Chocolat fondant","feb_kr_qty":6,"feb_kr_sales":60.5,"feb_sm_qty":7,"feb_sm_sales":74.8,"mar_kr_qty":11,"mar_kr_sales":82.5,"mar_sm_qty":16,"mar_sm_sales":176.0,"apr_kr_qty":5,"apr_kr_sales":55.0,"apr_sm_qty":5,"apr_sm_sales":55.0,"total_qty":50,"total_sales":503.8},{"item":"Coca-Cola Zero","feb_kr_qty":100,"feb_kr_sales":158.45,"feb_sm_qty":18,"feb_sm_sales":16.8,"mar_kr_qty":115,"mar_kr_sales":174.3,"mar_sm_qty":27,"mar_sm_sales":25.2,"apr_kr_qty":84,"apr_kr_sales":96.6,"apr_sm_qty":15,"apr_sm_sales":23.1,"total_qty":359,"total_sales":494.45},{"item":"Morgon \"Les Charmes\" Bottle","feb_kr_qty":4,"feb_kr_sales":200.0,"feb_sm_qty":6,"feb_sm_sales":290.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":10,"total_sales":490.0},{"item":"Purple Rain","feb_kr_qty":12,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":42,"mar_kr_sales":220.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":35,"apr_kr_sales":265.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":89,"total_sales":485.0},{"item":"Granola Bag","feb_kr_qty":25,"feb_kr_sales":132.0,"feb_sm_qty":8,"feb_sm_sales":48.0,"mar_kr_qty":28,"mar_kr_sales":132.0,"mar_sm_qty":10,"mar_sm_sales":59.4,"apr_kr_qty":17,"apr_kr_sales":82.5,"apr_sm_qty":1,"apr_sm_sales":6.0,"total_qty":89,"total_sales":459.9},{"item":"Cookies bags","feb_kr_qty":11,"feb_kr_sales":99.0,"feb_sm_qty":5,"feb_sm_sales":45.0,"mar_kr_qty":16,"mar_kr_sales":126.0,"mar_sm_qty":11,"mar_sm_sales":90.0,"apr_kr_qty":8,"apr_kr_sales":63.0,"apr_sm_qty":4,"apr_sm_sales":36.0,"total_qty":55,"total_sales":459.0},{"item":"Crozes-Hermitages 2021 Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":3,"mar_kr_sales":90.0,"mar_sm_qty":5,"mar_sm_sales":225.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":3,"apr_sm_sales":135.0,"total_qty":11,"total_sales":450.0},{"item":"Coteaux d'Aix - Pomponette Glass","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":11,"mar_kr_sales":125.0,"mar_sm_qty":12,"mar_sm_sales":150.0,"apr_kr_qty":4,"apr_kr_sales":50.0,"apr_sm_qty":9,"apr_sm_sales":112.5,"total_qty":36,"total_sales":437.5},{"item":"Brandy Clothing","feb_kr_qty":6,"feb_kr_sales":81.25,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":17,"mar_kr_sales":226.25,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":6,"apr_kr_sales":105.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":29,"total_sales":412.5},{"item":"Rosé M Minuty Glass 140ml","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":1,"feb_sm_sales":10.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":49,"mar_sm_sales":400.4,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":50,"total_sales":410.4},{"item":"Strawberry Kouign amann","feb_kr_qty":103,"feb_kr_sales":300.0,"feb_sm_qty":45,"feb_sm_sales":104.83,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":148,"total_sales":404.83},{"item":"Mushrooms Cocotte","feb_kr_qty":3,"feb_kr_sales":25.0,"feb_sm_qty":13,"feb_sm_sales":128.0,"mar_kr_qty":8,"mar_kr_sales":50.0,"mar_sm_qty":11,"mar_sm_sales":110.0,"apr_kr_qty":2,"apr_kr_sales":20.0,"apr_sm_qty":6,"apr_sm_sales":60.0,"total_qty":43,"total_sales":393.0},{"item":"Mâcon Milly Glasse","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":43,"mar_sm_sales":385.2,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":43,"total_sales":385.2},{"item":"Champagne Cossy Bottle","feb_kr_qty":2,"feb_kr_sales":116.0,"feb_sm_qty":3,"feb_sm_sales":174.0,"mar_kr_qty":2,"mar_kr_sales":29.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":1,"apr_kr_sales":58.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":8,"total_sales":377.0},{"item":"Marsannay Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":1,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":5,"apr_kr_sales":300.0,"apr_sm_qty":1,"apr_sm_sales":75.0,"total_qty":7,"total_sales":375.0},{"item":"White Americano Semi-Skimmed","feb_kr_qty":34,"feb_kr_sales":97.2,"feb_sm_qty":3,"feb_sm_sales":9.0,"mar_kr_qty":57,"mar_kr_sales":158.1,"mar_sm_qty":10,"mar_sm_sales":29.7,"apr_kr_qty":17,"apr_kr_sales":50.4,"apr_sm_qty":5,"apr_sm_sales":15.0,"total_qty":126,"total_sales":359.4},{"item":"The Fountain","feb_kr_qty":4,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":25,"mar_kr_sales":189.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":13,"apr_kr_sales":168.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":42,"total_sales":357.0},{"item":"Coca-Cola Classic","feb_kr_qty":71,"feb_kr_sales":102.9,"feb_sm_qty":19,"feb_sm_sales":15.54,"mar_kr_qty":83,"mar_kr_sales":102.9,"mar_sm_qty":27,"mar_sm_sales":39.69,"apr_kr_qty":75,"apr_kr_sales":65.4,"apr_sm_qty":17,"apr_sm_sales":27.09,"total_qty":292,"total_sales":353.52},{"item":"Gin Basil Smash","feb_kr_qty":17,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":25,"mar_kr_sales":126.5,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":26,"apr_kr_sales":225.5,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":68,"total_sales":352.0},{"item":"Amaretto Sour","feb_kr_qty":9,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":26,"mar_kr_sales":203.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":11,"apr_kr_sales":140.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":46,"total_sales":343.0},{"item":"Mocha Semi Skimmed","feb_kr_qty":19,"feb_kr_sales":56.92,"feb_sm_qty":5,"feb_sm_sales":20.0,"mar_kr_qty":40,"mar_kr_sales":154.8,"mar_sm_qty":7,"mar_sm_sales":26.8,"apr_kr_qty":14,"apr_kr_sales":55.2,"apr_sm_qty":5,"apr_sm_sales":19.6,"total_qty":90,"total_sales":333.32},{"item":"Champagne SM Bottle","feb_kr_qty":3,"feb_kr_sales":130.0,"feb_sm_qty":1,"feb_sm_sales":65.0,"mar_kr_qty":1,"mar_kr_sales":65.0,"mar_sm_qty":1,"mar_sm_sales":66.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":6,"total_sales":326.0},{"item":"Mâcon Milly Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":7,"mar_sm_sales":315.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":7,"total_sales":315.0},{"item":"Morgon \"Le Clos\" Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":3,"feb_sm_sales":180.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":2,"apr_sm_sales":120.0,"total_qty":5,"total_sales":300.0},{"item":"Iced Matcha Semi-Skimmed","feb_kr_qty":26,"feb_kr_sales":67.6,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":35,"mar_kr_sales":86.8,"mar_sm_qty":4,"mar_sm_sales":4.0,"apr_kr_qty":47,"apr_kr_sales":127.2,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":112,"total_sales":285.6},{"item":"Cortado semi Skimmed","feb_kr_qty":7,"feb_kr_sales":21.0,"feb_sm_qty":4,"feb_sm_sales":12.0,"mar_kr_qty":47,"mar_kr_sales":140.7,"mar_sm_qty":1,"mar_sm_sales":3.0,"apr_kr_qty":29,"apr_kr_sales":87.0,"apr_sm_qty":4,"apr_sm_sales":12.0,"total_qty":92,"total_sales":275.7},{"item":"Iced Mocha Whole milk","feb_kr_qty":12,"feb_kr_sales":44.0,"feb_sm_qty":4,"feb_sm_sales":16.0,"mar_kr_qty":16,"mar_kr_sales":64.0,"mar_sm_qty":15,"mar_sm_sales":56.0,"apr_kr_qty":14,"apr_kr_sales":56.0,"apr_sm_qty":10,"apr_sm_sales":39.6,"total_qty":71,"total_sales":275.6},{"item":"Lemonade","feb_kr_qty":22,"feb_kr_sales":57.0,"feb_sm_qty":41,"feb_sm_sales":75.0,"mar_kr_qty":15,"mar_kr_sales":42.0,"mar_sm_qty":31,"mar_sm_sales":53.4,"apr_kr_qty":5,"apr_kr_sales":15.0,"apr_sm_qty":17,"apr_sm_sales":33.0,"total_qty":131,"total_sales":275.4},{"item":"Sur Le Fil Bottle","feb_kr_qty":2,"feb_kr_sales":75.0,"feb_sm_qty":1,"feb_sm_sales":50.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":2,"mar_sm_sales":100.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":1,"apr_sm_sales":50.0,"total_qty":6,"total_sales":275.0},{"item":"Hot Chocolate semi-Skimmed","feb_kr_qty":72,"feb_kr_sales":126.0,"feb_sm_qty":2,"feb_sm_sales":6.0,"mar_kr_qty":58,"mar_kr_sales":57.53,"mar_sm_qty":7,"mar_sm_sales":21.0,"apr_kr_qty":40,"apr_kr_sales":59.44,"apr_sm_qty":1,"apr_sm_sales":3.0,"total_qty":180,"total_sales":272.97},{"item":"3 Bruschetta","feb_kr_qty":17,"feb_kr_sales":51.0,"feb_sm_qty":72,"feb_sm_sales":215.94,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":89,"total_sales":266.94},{"item":"Butter baguette","feb_kr_qty":66,"feb_kr_sales":87.0,"feb_sm_qty":8,"feb_sm_sales":12.0,"mar_kr_qty":69,"mar_kr_sales":85.5,"mar_sm_qty":7,"mar_sm_sales":9.0,"apr_kr_qty":48,"apr_kr_sales":63.0,"apr_sm_qty":4,"apr_sm_sales":6.0,"total_qty":202,"total_sales":262.5},{"item":"Salt Butter Le Gall","feb_kr_qty":16,"feb_kr_sales":61.6,"feb_sm_qty":5,"feb_sm_sales":18.8,"mar_kr_qty":27,"mar_kr_sales":96.6,"mar_sm_qty":7,"mar_sm_sales":28.0,"apr_kr_qty":13,"apr_kr_sales":46.4,"apr_sm_qty":2,"apr_sm_sales":7.0,"total_qty":70,"total_sales":258.4},{"item":"Extra shot","feb_kr_qty":60,"feb_kr_sales":55.4,"feb_sm_qty":17,"feb_sm_sales":15.4,"mar_kr_qty":82,"mar_kr_sales":81.7,"mar_sm_qty":36,"mar_sm_sales":32.45,"apr_kr_qty":38,"apr_kr_sales":36.0,"apr_sm_qty":28,"apr_sm_sales":19.25,"total_qty":261,"total_sales":240.2},{"item":"Sparkling Water","feb_kr_qty":3,"feb_kr_sales":12.0,"feb_sm_qty":15,"feb_sm_sales":59.2,"mar_kr_qty":9,"mar_kr_sales":32.0,"mar_sm_qty":10,"mar_sm_sales":40.0,"apr_kr_qty":9,"apr_kr_sales":36.0,"apr_sm_qty":13,"apr_sm_sales":52.0,"total_qty":59,"total_sales":231.2},{"item":"Iced choc Whole Milk","feb_kr_qty":18,"feb_kr_sales":48.0,"feb_sm_qty":10,"feb_sm_sales":20.0,"mar_kr_qty":26,"mar_kr_sales":71.1,"mar_sm_qty":19,"mar_sm_sales":12.0,"apr_kr_qty":24,"apr_kr_sales":60.0,"apr_sm_qty":12,"apr_sm_sales":8.0,"total_qty":109,"total_sales":219.1},{"item":"Bag","feb_kr_qty":8,"feb_kr_sales":109.0,"feb_sm_qty":1,"feb_sm_sales":13.0,"mar_kr_qty":4,"mar_kr_sales":46.7,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":3,"apr_kr_sales":46.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":16,"total_sales":214.7},{"item":"Basket Bread add","feb_kr_qty":13,"feb_kr_sales":33.0,"feb_sm_qty":8,"feb_sm_sales":23.97,"mar_kr_qty":22,"mar_kr_sales":42.0,"mar_sm_qty":19,"mar_sm_sales":57.0,"apr_kr_qty":12,"apr_kr_sales":28.5,"apr_sm_qty":8,"apr_sm_sales":23.4,"total_qty":82,"total_sales":207.87},{"item":"1664 Blanche Half Pint","feb_kr_qty":9,"feb_kr_sales":36.0,"feb_sm_qty":18,"feb_sm_sales":65.4,"mar_kr_qty":8,"mar_kr_sales":28.0,"mar_sm_qty":11,"mar_sm_sales":42.4,"apr_kr_qty":4,"apr_kr_sales":16.0,"apr_sm_qty":3,"apr_sm_sales":11.2,"total_qty":53,"total_sales":199.0},{"item":"Honey","feb_kr_qty":88,"feb_kr_sales":38.45,"feb_sm_qty":2,"feb_sm_sales":1.0,"mar_kr_qty":190,"mar_kr_sales":95.35,"mar_sm_qty":9,"mar_sm_sales":3.0,"apr_kr_qty":137,"apr_kr_sales":49.45,"apr_sm_qty":7,"apr_sm_sales":8.5,"total_qty":433,"total_sales":195.75},{"item":"Dirty Chai Whole Milk","feb_kr_qty":23,"feb_kr_sales":20.0,"feb_sm_qty":5,"feb_sm_sales":20.0,"mar_kr_qty":31,"mar_kr_sales":90.38,"mar_sm_qty":5,"mar_sm_sales":16.67,"apr_kr_qty":17,"apr_kr_sales":40.0,"apr_sm_qty":2,"apr_sm_sales":5.0,"total_qty":83,"total_sales":192.05},{"item":"Chateauneuf 2021 Glass","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":13,"mar_sm_sales":189.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":13,"total_sales":189.0},{"item":"250gr Lomi Coffee Bag","feb_kr_qty":1,"feb_kr_sales":14.0,"feb_sm_qty":2,"feb_sm_sales":28.0,"mar_kr_qty":1,"mar_kr_sales":0.0,"mar_sm_qty":4,"mar_sm_sales":56.0,"apr_kr_qty":2,"apr_kr_sales":0.0,"apr_sm_qty":6,"apr_sm_sales":81.2,"total_qty":16,"total_sales":179.2},{"item":"Babyccino","feb_kr_qty":58,"feb_kr_sales":57.7,"feb_sm_qty":9,"feb_sm_sales":9.0,"mar_kr_qty":66,"mar_kr_sales":64.9,"mar_sm_qty":10,"mar_sm_sales":9.9,"apr_kr_qty":27,"apr_kr_sales":27.0,"apr_sm_qty":9,"apr_sm_sales":9.0,"total_qty":179,"total_sales":177.5},{"item":"Small Sparkling Water","feb_kr_qty":20,"feb_kr_sales":47.5,"feb_sm_qty":30,"feb_sm_sales":42.0,"mar_kr_qty":19,"mar_kr_sales":42.5,"mar_sm_qty":17,"mar_sm_sales":22.5,"apr_kr_qty":3,"apr_kr_sales":7.5,"apr_sm_qty":16,"apr_sm_sales":15.0,"total_qty":105,"total_sales":177.0},{"item":"Gold Rush","feb_kr_qty":2,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":13,"mar_kr_sales":72.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":9,"apr_kr_sales":99.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":24,"total_sales":171.0},{"item":"Camden Half","feb_kr_qty":7,"feb_kr_sales":24.5,"feb_sm_qty":7,"feb_sm_sales":24.5,"mar_kr_qty":14,"mar_kr_sales":35.0,"mar_sm_qty":12,"mar_sm_sales":42.0,"apr_kr_qty":6,"apr_kr_sales":14.0,"apr_sm_qty":7,"apr_sm_sales":24.5,"total_qty":53,"total_sales":164.5},{"item":"Pizza Tomato Burrata","feb_kr_qty":3,"feb_kr_sales":8.89,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":13,"mar_kr_sales":70.49,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":15,"apr_kr_sales":83.28,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":31,"total_sales":162.66},{"item":"Coca Cola Zero","feb_kr_qty":24,"feb_kr_sales":29.4,"feb_sm_qty":24,"feb_sm_sales":10.5,"mar_kr_qty":45,"mar_kr_sales":57.75,"mar_sm_qty":36,"mar_sm_sales":28.98,"apr_kr_qty":21,"apr_kr_sales":30.45,"apr_sm_qty":18,"apr_sm_sales":4.2,"total_qty":168,"total_sales":161.28},{"item":"Pierre Précieuse, Alexandre Bain Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":3,"feb_sm_sales":159.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":3,"total_sales":159.0},{"item":"Guinness Beer Half","feb_kr_qty":8,"feb_kr_sales":36.0,"feb_sm_qty":7,"feb_sm_sales":30.6,"mar_kr_qty":7,"mar_kr_sales":24.75,"mar_sm_qty":7,"mar_sm_sales":31.5,"apr_kr_qty":1,"apr_kr_sales":4.5,"apr_sm_qty":6,"apr_sm_sales":27.0,"total_qty":36,"total_sales":154.35},{"item":"Glass Cœur de Village","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":11,"mar_sm_sales":143.1,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":11,"total_sales":143.1},{"item":"Spring & Delancey","feb_kr_qty":4,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":12,"mar_kr_sales":65.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":6,"apr_kr_sales":71.5,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":22,"total_sales":136.5},{"item":"Les Sardines Bottle","feb_kr_qty":1,"feb_kr_sales":67.0,"feb_sm_qty":1,"feb_sm_sales":67.0,"mar_kr_qty":1,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":3,"total_sales":134.0},{"item":"Apple Juice","feb_kr_qty":18,"feb_kr_sales":33.0,"feb_sm_qty":10,"feb_sm_sales":24.0,"mar_kr_qty":14,"mar_kr_sales":28.5,"mar_sm_qty":7,"mar_sm_sales":21.0,"apr_kr_qty":3,"apr_kr_sales":9.0,"apr_sm_qty":7,"apr_sm_sales":18.0,"total_qty":59,"total_sales":133.5},{"item":"Crackers","feb_kr_qty":14,"feb_kr_sales":81.3,"feb_sm_qty":8,"feb_sm_sales":46.5,"mar_kr_qty":1,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":1,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":24,"total_sales":127.8},{"item":"Extra milk","feb_kr_qty":27,"feb_kr_sales":22.0,"feb_sm_qty":1,"feb_sm_sales":1.0,"mar_kr_qty":72,"mar_kr_sales":59.8,"mar_sm_qty":3,"mar_sm_sales":3.0,"apr_kr_qty":47,"apr_kr_sales":31.9,"apr_sm_qty":6,"apr_sm_sales":6.0,"total_qty":156,"total_sales":123.7},{"item":"Babyccino with chocolate","feb_kr_qty":38,"feb_kr_sales":38.0,"feb_sm_qty":5,"feb_sm_sales":4.85,"mar_kr_qty":45,"mar_kr_sales":45.0,"mar_sm_qty":1,"mar_sm_sales":1.0,"apr_kr_qty":32,"apr_kr_sales":32.0,"apr_sm_qty":1,"apr_sm_sales":1.0,"total_qty":122,"total_sales":121.85},{"item":"Half Sourdough Bag","feb_kr_qty":11,"feb_kr_sales":27.5,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":5,"mar_kr_sales":12.5,"mar_sm_qty":13,"mar_sm_sales":32.25,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":20,"apr_sm_sales":48.88,"total_qty":49,"total_sales":121.13},{"item":"Mango Sorbet","feb_kr_qty":4,"feb_kr_sales":9.0,"feb_sm_qty":13,"feb_sm_sales":38.4,"mar_kr_qty":12,"mar_kr_sales":28.5,"mar_sm_qty":6,"mar_sm_sales":17.4,"apr_kr_qty":4,"apr_kr_sales":10.5,"apr_sm_qty":4,"apr_sm_sales":12.0,"total_qty":43,"total_sales":115.8},{"item":"Very Berry Winter tea","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":13,"feb_sm_sales":36.88,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":20,"mar_sm_sales":59.7,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":6,"apr_sm_sales":18.0,"total_qty":39,"total_sales":114.58},{"item":"Elijah Craig Double","feb_kr_qty":2,"feb_kr_sales":32.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":4,"mar_kr_sales":48.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":2,"apr_kr_sales":32.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":8,"total_sales":112.0},{"item":"Bourgogne Côte-d'Or Rouge Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":2,"mar_sm_sales":110.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":2,"total_sales":110.0},{"item":"Small Still Water","feb_kr_qty":10,"feb_kr_sales":22.5,"feb_sm_qty":10,"feb_sm_sales":20.0,"mar_kr_qty":15,"mar_kr_sales":32.5,"mar_sm_qty":11,"mar_sm_sales":17.5,"apr_kr_qty":4,"apr_kr_sales":10.0,"apr_sm_qty":4,"apr_sm_sales":5.0,"total_qty":54,"total_sales":107.5},{"item":"Macchiato Oat milk","feb_kr_qty":7,"feb_kr_sales":19.6,"feb_sm_qty":3,"feb_sm_sales":9.0,"mar_kr_qty":8,"mar_kr_sales":21.84,"mar_sm_qty":5,"mar_sm_sales":13.95,"apr_kr_qty":11,"apr_kr_sales":30.8,"apr_sm_qty":2,"apr_sm_sales":6.0,"total_qty":36,"total_sales":101.19},{"item":"Domaine de la Vieille Julienne 2018","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":1,"mar_kr_sales":0.0,"mar_sm_qty":1,"mar_sm_sales":97.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":2,"total_sales":97.0},{"item":"Still Water","feb_kr_qty":4,"feb_kr_sales":16.0,"feb_sm_qty":4,"feb_sm_sales":16.0,"mar_kr_qty":8,"mar_kr_sales":28.0,"mar_sm_qty":3,"mar_sm_sales":12.0,"apr_kr_qty":4,"apr_kr_sales":16.0,"apr_sm_qty":1,"apr_sm_sales":4.0,"total_qty":24,"total_sales":92.0},{"item":"Iced Chai Latte Oat Milk","feb_kr_qty":6,"feb_kr_sales":24.0,"feb_sm_qty":4,"feb_sm_sales":8.0,"mar_kr_qty":11,"mar_kr_sales":31.6,"mar_sm_qty":8,"mar_sm_sales":3.6,"apr_kr_qty":11,"apr_kr_sales":24.0,"apr_sm_qty":4,"apr_sm_sales":0.0,"total_qty":44,"total_sales":91.2},{"item":"Iced Chai Latte Whole Milk","feb_kr_qty":4,"feb_kr_sales":8.0,"feb_sm_qty":5,"feb_sm_sales":8.0,"mar_kr_qty":10,"mar_kr_sales":32.67,"mar_sm_qty":13,"mar_sm_sales":16.0,"apr_kr_qty":7,"apr_kr_sales":16.0,"apr_sm_qty":4,"apr_sm_sales":8.0,"total_qty":43,"total_sales":88.67},{"item":"Chai Latte Semi Skimmed","feb_kr_qty":7,"feb_kr_sales":16.0,"feb_sm_qty":2,"feb_sm_sales":8.0,"mar_kr_qty":4,"mar_kr_sales":16.0,"mar_sm_qty":4,"mar_sm_sales":16.0,"apr_kr_qty":6,"apr_kr_sales":24.0,"apr_sm_qty":1,"apr_sm_sales":4.0,"total_qty":24,"total_sales":84.0},{"item":"Tiramisu","feb_kr_qty":9,"feb_kr_sales":38.0,"feb_sm_qty":11,"feb_sm_sales":43.96,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":20,"total_sales":81.96},{"item":"Pan con tomato","feb_kr_qty":10,"feb_kr_sales":38.0,"feb_sm_qty":10,"feb_sm_sales":40.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":20,"total_sales":78.0},{"item":"Red Velvet Mockatil","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":10,"apr_kr_sales":76.5,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":10,"total_sales":76.5},{"item":"Domaine de Ferrand, 2021 Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":1,"mar_kr_sales":0.0,"mar_sm_qty":1,"mar_sm_sales":75.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":2,"total_sales":75.0},{"item":"Chateauneuf 2021 Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":1,"mar_sm_sales":75.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":1,"total_sales":75.0},{"item":"Savigny-les-Beaunes Vieilles Vignes 2023","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":1,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":1,"apr_kr_sales":70.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":2,"total_sales":70.0},{"item":"Champagne \"Cuvée Prestige\" Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":1,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":1,"apr_sm_sales":66.0,"total_qty":2,"total_sales":66.0},{"item":"Champagne \"Cuvée Prestige\" 2005 Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":1,"mar_kr_sales":65.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":1,"total_sales":65.0},{"item":"Straight 2023 Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":1,"feb_sm_sales":65.0,"mar_kr_qty":1,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":2,"total_sales":65.0},{"item":"Iced choc Semi Skimmed","feb_kr_qty":1,"feb_kr_sales":3.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":9,"mar_kr_sales":27.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":11,"apr_kr_sales":33.0,"apr_sm_qty":1,"apr_sm_sales":0.0,"total_qty":22,"total_sales":63.0},{"item":"Bourgogne Rouge Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":1,"feb_sm_sales":60.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":1,"total_sales":60.0},{"item":"Meringues","feb_kr_qty":9,"feb_kr_sales":16.0,"feb_sm_qty":3,"feb_sm_sales":6.0,"mar_kr_qty":12,"mar_kr_sales":22.0,"mar_sm_qty":7,"mar_sm_sales":11.8,"apr_kr_qty":1,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":32,"total_sales":55.8},{"item":"Garden Mocktail","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":8,"apr_kr_sales":55.25,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":8,"total_sales":55.25},{"item":"Aligo Rhythm","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":1,"feb_sm_sales":55.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":1,"total_sales":55.0},{"item":"Iced Mocha Oat Milk","feb_kr_qty":2,"feb_kr_sales":4.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":8,"mar_kr_sales":24.0,"mar_sm_qty":3,"mar_sm_sales":12.0,"apr_kr_qty":3,"apr_kr_sales":12.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":16,"total_sales":52.0},{"item":"Woodford Reserve RYE Double","feb_kr_qty":1,"feb_kr_sales":16.0,"feb_sm_qty":2,"feb_sm_sales":32.0,"mar_kr_qty":1,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":4,"total_sales":48.0},{"item":"Crozes-Hermitage Bottle","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":1,"mar_sm_sales":45.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":1,"total_sales":45.0},{"item":"Chai Latte Whole Milke","feb_kr_qty":7,"feb_kr_sales":28.0,"feb_sm_qty":3,"feb_sm_sales":12.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":10,"total_sales":40.0},{"item":"Iced choc Oat Milk","feb_kr_qty":6,"feb_kr_sales":12.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":10,"mar_kr_sales":9.0,"mar_sm_qty":2,"mar_sm_sales":4.0,"apr_kr_qty":13,"apr_kr_sales":15.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":31,"total_sales":40.0},{"item":"Strawberry Syrup","feb_kr_qty":32,"feb_kr_sales":8.0,"feb_sm_qty":4,"feb_sm_sales":0.15,"mar_kr_qty":51,"mar_kr_sales":12.5,"mar_sm_qty":12,"mar_sm_sales":1.42,"apr_kr_qty":50,"apr_kr_sales":15.5,"apr_sm_qty":6,"apr_sm_sales":0.88,"total_qty":155,"total_sales":38.45},{"item":"Single Whisky Woodford Reserve Distillery","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":1,"feb_sm_sales":6.0,"mar_kr_qty":4,"mar_kr_sales":9.0,"mar_sm_qty":2,"mar_sm_sales":12.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":1,"apr_sm_sales":6.0,"total_qty":8,"total_sales":33.0},{"item":"Coca Cola","feb_kr_qty":11,"feb_kr_sales":0.0,"feb_sm_qty":30,"feb_sm_sales":4.2,"mar_kr_qty":10,"mar_kr_sales":9.45,"mar_sm_qty":41,"mar_sm_sales":14.17,"apr_kr_qty":3,"apr_kr_sales":4.2,"apr_sm_qty":12,"apr_sm_sales":0.0,"total_qty":107,"total_sales":32.02},{"item":"Elijah Craig Single","feb_kr_qty":3,"feb_kr_sales":24.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":1,"mar_kr_sales":0.0,"mar_sm_qty":1,"mar_sm_sales":8.0,"apr_kr_qty":2,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":7,"total_sales":32.0},{"item":"Bonne maman Fraises JAM 250GR","feb_kr_qty":1,"feb_kr_sales":6.0,"feb_sm_qty":1,"feb_sm_sales":6.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":1,"mar_sm_sales":6.0,"apr_kr_qty":1,"apr_kr_sales":6.0,"apr_sm_qty":1,"apr_sm_sales":6.0,"total_qty":5,"total_sales":30.0},{"item":"Woodford Reserve RYE Single","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":3,"feb_sm_sales":24.0,"mar_kr_qty":1,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":4,"total_sales":24.0},{"item":"Grissini","feb_kr_qty":2,"feb_kr_sales":4.0,"feb_sm_qty":7,"feb_sm_sales":14.0,"mar_kr_qty":1,"mar_kr_sales":0.0,"mar_sm_qty":3,"mar_sm_sales":6.0,"apr_kr_qty":1,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":14,"total_sales":24.0},{"item":"Bonne Maman Abricot JAM 250gr","feb_kr_qty":1,"feb_kr_sales":6.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":2,"mar_sm_sales":12.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":1,"apr_sm_sales":6.0,"total_qty":4,"total_sales":24.0},{"item":"Mini Olive Oil Baguette","feb_kr_qty":4,"feb_kr_sales":4.5,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":9,"mar_kr_sales":13.5,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":3,"apr_kr_sales":4.5,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":16,"total_sales":22.5},{"item":"Dirty Chai Semi Skimmed","feb_kr_qty":4,"feb_kr_sales":10.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":4,"mar_kr_sales":10.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":2,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":10,"total_sales":20.0},{"item":"Iced Mocha Semi Skimmedd","feb_kr_qty":1,"feb_kr_sales":4.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":4,"mar_kr_sales":16.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":5,"total_sales":20.0},{"item":"Macchiato Semi-skimmed","feb_kr_qty":4,"feb_kr_sales":11.2,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":2,"mar_kr_sales":5.6,"mar_sm_qty":1,"mar_sm_sales":3.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":7,"total_sales":19.8},{"item":"Dirty Chai Latte Oat","feb_kr_qty":4,"feb_kr_sales":18.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":4,"total_sales":18.0},{"item":"Peach Iced Tea","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":4,"apr_sm_sales":14.0,"total_qty":4,"total_sales":14.0},{"item":"Double Whisky Woodford Reserve Distillery","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":3,"mar_kr_sales":12.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":3,"total_sales":12.0},{"item":"Iced Dirty Chai Oat Milk","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":1,"apr_kr_sales":5.0,"apr_sm_qty":1,"apr_sm_sales":5.0,"total_qty":2,"total_sales":10.0},{"item":"Sugar Syrup","feb_kr_qty":9,"feb_kr_sales":4.5,"feb_sm_qty":2,"feb_sm_sales":1.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":6,"mar_sm_sales":2.85,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":3,"apr_sm_sales":1.5,"total_qty":20,"total_sales":9.85},{"item":"Green Tea Milk","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":1,"feb_sm_sales":3.0,"mar_kr_qty":1,"mar_kr_sales":3.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":1,"apr_sm_sales":3.0,"total_qty":3,"total_sales":9.0},{"item":"Very Berry Winter Milk","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":3,"feb_sm_sales":9.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":3,"total_sales":9.0},{"item":"Iced Dirty Chai Semi Skimmed Milk","feb_kr_qty":1,"feb_kr_sales":0.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":4,"mar_kr_sales":5.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":5,"total_sales":5.0},{"item":"Iced Dirty Chai Whole Milk","feb_kr_qty":3,"feb_kr_sales":0.0,"feb_sm_qty":1,"feb_sm_sales":0.0,"mar_kr_qty":5,"mar_kr_sales":5.0,"mar_sm_qty":6,"mar_sm_sales":0.0,"apr_kr_qty":8,"apr_kr_sales":0.0,"apr_sm_qty":2,"apr_sm_sales":0.0,"total_qty":25,"total_sales":5.0},{"item":"Dirty Chai Latte Whole","feb_kr_qty":2,"feb_kr_sales":4.5,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":2,"total_sales":4.5},{"item":"Iced Chai Latte Semi Skimmed Milk","feb_kr_qty":1,"feb_kr_sales":4.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":1,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":2,"total_sales":4.0},{"item":"Integral Bread","feb_kr_qty":1,"feb_kr_sales":4.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":1,"total_sales":4.0},{"item":"Mint Tea Milk","feb_kr_qty":2,"feb_kr_sales":3.0,"feb_sm_qty":0,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":0,"mar_sm_sales":0.0,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":0,"apr_sm_sales":0.0,"total_qty":2,"total_sales":3.0},{"item":"Blueberry Syrup","feb_kr_qty":0,"feb_kr_sales":0.0,"feb_sm_qty":2,"feb_sm_sales":0.0,"mar_kr_qty":0,"mar_kr_sales":0.0,"mar_sm_qty":7,"mar_sm_sales":0.5,"apr_kr_qty":0,"apr_kr_sales":0.0,"apr_sm_qty":4,"apr_sm_sales":1.88,"total_qty":13,"total_sales":2.38}];
+var currentData = RAW.slice();
+
+/* ── NAVIGATION ── */
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.getElementById('page-' + id).classList.add('active');
+  btn.classList.add('active');
+  if(id === 'dashboard') { buildCharts(); }
+  window.scrollTo(0, 0);
+}
+
+/* ── THEME ── */
+var COLORS = {
+  light: { kr:'#1a6ec0', sm:'#0a7a55', bar:'#5b48c4',
+           grid:'rgba(0,0,0,0.06)', tick:'#999994',
+           ttBg:'#ffffff', ttBorder:'rgba(0,0,0,0.12)', ttTitle:'#1a1a18', ttBody:'#666660' },
+  dark:  { kr:'#5b9cf6', sm:'#4ecba0', bar:'#a78bfa',
+           grid:'rgba(255,255,255,0.06)', tick:'#666662',
+           ttBg:'#222228', ttBorder:'rgba(255,255,255,0.1)', ttTitle:'#f0eee8', ttBody:'#888880' }
+};
+function getTheme(){ return document.documentElement.getAttribute('data-theme') || 'light'; }
+
+document.getElementById('themeBtn').addEventListener('click', function(){
+  var dark = getTheme() === 'dark';
+  document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
+  document.getElementById('themeBtn').innerHTML = dark ? '&#127769;' : '&#9728;&#65039;';
+  buildCharts();
+});
+
+/* ── CHARTS ── */
+var revChart = null, qtyChart = null;
+
+function buildCharts(){
+  var t = COLORS[getTheme()];
+  var mobile = window.innerWidth <= 640;
+  var h = mobile ? 190 : 210;
+  document.querySelectorAll('.chart-wrap').forEach(function(el){ el.style.height = h + 'px'; });
+  ['dKR1','dKR2'].forEach(function(id){ var el=document.getElementById(id); if(el) el.style.background=t.kr; });
+  ['dSM1','dSM2'].forEach(function(id){ var el=document.getElementById(id); if(el) el.style.background=t.sm; });
+  var db=document.getElementById('dBar'); if(db) db.style.background=t.bar;
+  document.querySelectorAll('.product-bar-fill').forEach(function(el){
+    el.style.background='linear-gradient(90deg,'+t.bar+','+t.bar+'cc)';
+  });
+  function scaleOpts(yFmt){
+    return {
+      x:{ticks:{color:t.tick,font:{size:11}},grid:{color:t.grid},border:{color:'transparent'}},
+      y:{ticks:{color:t.tick,callback:yFmt,font:{size:10}},grid:{color:t.grid},border:{color:'transparent'}}
+    };
+  }
+  if(revChart){revChart.destroy();revChart=null;}
+  revChart=new Chart(document.getElementById('revenueChart'),{
+    type:'bar',
+    data:{labels:['February','March','April'],datasets:[
+      {label:'Kings Road',data:[119590,143414,79033],backgroundColor:t.kr,borderRadius:5,borderSkipped:false},
+      {label:'St Martin', data:[56602, 57696, 30068],backgroundColor:t.sm,borderRadius:5,borderSkipped:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:t.ttBg,borderColor:t.ttBorder,borderWidth:1,titleColor:t.ttTitle,bodyColor:t.ttBody,padding:10,cornerRadius:6,
+        callbacks:{label:function(c){return ' \u00a3'+c.raw.toLocaleString();}}}},
+      scales:scaleOpts(function(v){return '\u00a3'+(v/1000).toFixed(0)+'k';})}
+  });
+  if(qtyChart){qtyChart.destroy();qtyChart=null;}
+  qtyChart=new Chart(document.getElementById('qtyChart'),{
+    type:'bar',
+    data:{labels:['February','March','April'],datasets:[
+      {label:'Kings Road',data:[33704,39886,22655],backgroundColor:t.kr,borderRadius:5,borderSkipped:false},
+      {label:'St Martin', data:[14023,14423,7851], backgroundColor:t.sm,borderRadius:5,borderSkipped:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:t.ttBg,borderColor:t.ttBorder,borderWidth:1,titleColor:t.ttTitle,bodyColor:t.ttBody,padding:10,cornerRadius:6,
+        callbacks:{label:function(c){return ' '+c.raw.toLocaleString()+' items';}}}},
+      scales:scaleOpts(function(v){return v.toLocaleString();})}
+  });
+}
+
+/* ── PRODUCTS BAR LIST ── */
+var products=[
+  {name:'Tuna Sandwich',value:25067},{name:'Flat White Whole Milk',value:25000},
+  {name:'Avocado Toast HB',value:24327},{name:'Cappuccino Whole Milk',value:18594},
+  {name:'Scrambled Eggs',value:17916},{name:'Latte Whole Milk',value:15591},
+  {name:'Ham & Butter Sandwich',value:14079},{name:'Pain Au Chocolat',value:12887},
+  {name:'Croissant',value:12440},{name:'Americano',value:10492},
+  {name:'Flat White Oat Milk',value:9717},{name:'Choc Hazelnut Cookie',value:8818},
+  {name:'Baguette',value:8745},{name:'Latte Oat Milk',value:7885},
+  {name:'Saucisson Sandwich',value:7735}
+];
+(function(){
+  var maxVal=products[0].value;
+  var grid=document.getElementById('productsGrid');
+  products.forEach(function(p,i){
+    var pct=(p.value/maxVal*100).toFixed(1);
+    var row=document.createElement('div');
+    row.className='product-row';
+    row.innerHTML='<div class="product-name"><span class="product-rank">#'+(i+1)+'</span>'+p.name+'</div>'
+      +'<div class="product-bar-track"><div class="product-bar-fill" style="width:'+pct+'%"></div></div>'
+      +'<div class="product-value">\u00a3'+p.value.toLocaleString()+'</div>';
+    grid.appendChild(row);
+  });
+})();
+
+/* ── TABLE ── */
+function fmt(v){return v===0?'\u2014':v.toLocaleString('en-GB');}
+function fmtGbp(v){return v===0?'\u2014':'\u00a3'+v.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');}
+
+function renderTable(data){
+  var tbody=document.getElementById('tableBody');
+  var noR=document.getElementById('noResults');
+  if(data.length===0){tbody.innerHTML='';noR.style.display='block';updateFooter(data);return;}
+  noR.style.display='none';
+  var rows='';
+  data.forEach(function(r,i){
+    var s=i%2===1?' striped':'';
+    var z=function(v){return v===0?' zero':'';};
+    var name=r.item.replace(/"/g,'&quot;');
+    rows+='<tr class="'+s+'">'
+      +'<td class="rank">'+(i+1)+'</td>'
+      +'<td class="item-name" title="'+name+'">'+name+'</td>'
+      +'<td class="'+z(r.feb_kr_qty)+'">'+fmt(r.feb_kr_qty)+'</td>'
+      +'<td class="'+z(r.feb_kr_sales)+' kr-sep">'+fmtGbp(r.feb_kr_sales)+'</td>'
+      +'<td class="'+z(r.feb_sm_qty)+'">'+fmt(r.feb_sm_qty)+'</td>'
+      +'<td class="'+z(r.feb_sm_sales)+' feb-end">'+fmtGbp(r.feb_sm_sales)+'</td>'
+      +'<td class="'+z(r.mar_kr_qty)+'">'+fmt(r.mar_kr_qty)+'</td>'
+      +'<td class="'+z(r.mar_kr_sales)+' kr-sep">'+fmtGbp(r.mar_kr_sales)+'</td>'
+      +'<td class="'+z(r.mar_sm_qty)+'">'+fmt(r.mar_sm_qty)+'</td>'
+      +'<td class="'+z(r.mar_sm_sales)+' mar-end">'+fmtGbp(r.mar_sm_sales)+'</td>'
+      +'<td class="'+z(r.apr_kr_qty)+'">'+fmt(r.apr_kr_qty)+'</td>'
+      +'<td class="'+z(r.apr_kr_sales)+' kr-sep">'+fmtGbp(r.apr_kr_sales)+'</td>'
+      +'<td class="'+z(r.apr_sm_qty)+'">'+fmt(r.apr_sm_qty)+'</td>'
+      +'<td class="'+z(r.apr_sm_sales)+' apr-end">'+fmtGbp(r.apr_sm_sales)+'</td>'
+      +'<td class="total-qty">'+fmt(r.total_qty)+'</td>'
+      +'<td class="total-sales">'+fmtGbp(r.total_sales)+'</td>'
+      +'</tr>';
+  });
+  tbody.innerHTML=rows;
+  updateFooter(data);
+}
+
+function updateFooter(data){
+  var rev=data.reduce(function(s,r){return s+r.total_sales;},0);
+  var qty=data.reduce(function(s,r){return s+r.total_qty;},0);
+  document.getElementById('rowCount').textContent=data.length;
+  document.getElementById('footerCount').textContent=data.length+' products';
+  document.getElementById('footerRevenue').textContent='\u00a3'+rev.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  document.getElementById('footerQty').textContent=qty.toLocaleString('en-GB');
+}
+
+function filterTable(){
+  var q=document.getElementById('searchInput').value.toLowerCase();
+  currentData=RAW.filter(function(r){return r.item.toLowerCase().indexOf(q)>=0;});
+  sortTable();
+}
+
+function sortTable(){
+  var val=document.getElementById('sortSelect').value;
+  var s=currentData.slice();
+  if(val==='total_sales_desc') s.sort(function(a,b){return b.total_sales-a.total_sales;});
+  else if(val==='total_sales_asc') s.sort(function(a,b){return a.total_sales-b.total_sales;});
+  else if(val==='total_qty_desc') s.sort(function(a,b){return b.total_qty-a.total_qty;});
+  else if(val==='total_qty_asc') s.sort(function(a,b){return a.total_qty-b.total_qty;});
+  else if(val==='name_asc') s.sort(function(a,b){return a.item.localeCompare(b.item);});
+  else if(val==='name_desc') s.sort(function(a,b){return b.item.localeCompare(a.item);});
+  renderTable(s);
+}
+
+/* ── INIT ── */
+renderTable(currentData);
+buildCharts();
+</script>
+</body>
+</html>
