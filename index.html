@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>St George – Sales Report 04/05/26–17/05/26</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh;-webkit-text-size-adjust:100%}
+.header{background:linear-gradient(135deg,#1a1f2e 0%,#16213e 50%,#0f3460 100%);padding:28px 16px;text-align:center;border-bottom:1px solid #2d3748}
+.header h1{font-size:clamp(1.3rem,5vw,2rem);font-weight:700;color:#fff;letter-spacing:-0.5px}
+.header p{color:#94a3b8;margin-top:8px;font-size:clamp(0.8rem,3vw,0.95rem)}
+.badge{display:inline-block;background:rgba(99,102,241,0.2);border:1px solid rgba(99,102,241,0.4);color:#a5b4fc;padding:4px 14px;border-radius:20px;font-size:0.8rem;margin-top:12px}
+.container{max-width:1400px;margin:0 auto;padding:20px 12px}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.kpi{background:linear-gradient(135deg,#1e2535,#252d40);border:1px solid #2d3748;border-radius:14px;padding:18px 12px;text-align:center;transition:transform .2s}
+.kpi:active{transform:scale(0.98)}
+.kpi .val{font-size:clamp(1.6rem,6vw,2.8rem);font-weight:700;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.kpi .lbl{color:#64748b;font-size:clamp(0.65rem,2vw,0.85rem);margin-top:6px;text-transform:uppercase;letter-spacing:.5px}
+.kpi .sub{color:#94a3b8;font-size:clamp(0.75rem,2.5vw,0.9rem);margin-top:4px}
+.section-title{font-size:clamp(0.95rem,3vw,1.1rem);font-weight:600;color:#c7d2fe;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #2d3748;display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';flex-shrink:0;width:4px;height:18px;background:linear-gradient(#6366f1,#8b5cf6);border-radius:2px}
+.charts-2col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.chart-card{background:#1e2535;border:1px solid #2d3748;border-radius:14px;padding:18px 14px}
+.chart-card h3{font-size:0.8rem;font-weight:600;color:#94a3b8;margin-bottom:14px;text-transform:uppercase;letter-spacing:.5px}
+.chart-wrap{position:relative;height:240px}
+.chart-wrap.tall{height:340px}
+.chart-wrap.top12{height:300px}
+table{width:100%;border-collapse:collapse;font-size:0.8rem}
+th{background:#252d40;color:#94a3b8;padding:9px 8px;text-align:left;font-weight:500;text-transform:uppercase;font-size:0.68rem;letter-spacing:.4px;white-space:nowrap}
+td{padding:7px 8px;border-bottom:1px solid #1a2030;color:#cbd5e1;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tr.total-row td{background:#252d40;color:#e2e8f0}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.annule{opacity:.5;font-style:italic}
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px}
+.footer{text-align:center;padding:28px 16px;color:#475569;font-size:0.78rem;border-top:1px solid #1e2535}
+/* Accordion */
+.accordion{border:1px solid #2d3748;border-radius:14px;overflow:hidden;margin-bottom:16px}
+.accordion-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:#1e2535;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+.accordion-header h3{font-size:0.85rem;font-weight:600;color:#c7d2fe;text-transform:uppercase;letter-spacing:.5px;margin:0}
+.accordion-header .chevron{color:#6366f1;font-size:1.1rem;transition:transform .3s;flex-shrink:0}
+.accordion-header.open .chevron{transform:rotate(180deg)}
+.accordion-body{display:none;background:#1e2535;border-top:1px solid #2d3748}
+.accordion-body.open{display:block}
+.accordion-body .inner{padding:16px 14px}
+/* Responsive breakpoints */
+@media(max-width:700px){
+  .kpi-grid{grid-template-columns:repeat(3,1fr);gap:8px}
+  .kpi{padding:14px 8px}
+  .charts-2col{grid-template-columns:1fr}
+  .chart-wrap{height:160px}
+  .chart-wrap.tall{height:200px}
+  .chart-wrap.top12{height:260px}
+  .container{padding:16px 10px}
+  .chart-card{padding:14px 12px}
+}
+@media(max-width:400px){
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .kpi:last-child{grid-column:1/-1}
+  .chart-wrap{height:140px}
+  .chart-wrap.tall{height:180px}
+  .chart-wrap.top12{height:220px}
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>&#x1F4CA; Weekly Sales Report</h1>
+  <p>St George Restaurant Group &middot; Square POS Data</p>
+  <span class="badge">04 May 2026 &ndash; 17 May 2026</span>
+</div>
+<div class="container">
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="val">556</div><div class="lbl">Total Items Sold</div><div class="sub">Both locations &middot; 2 weeks</div></div>
+    <div class="kpi"><div class="val">360</div><div class="lbl">St Martin</div><div class="sub">65% of total</div></div>
+    <div class="kpi"><div class="val">196</div><div class="lbl">Kings Road</div><div class="sub">35% of total</div></div>
+  </div>
+
+  <div class="charts-2col">
+    <div class="chart-card"><h3>Location Split</h3><div class="chart-wrap"><canvas id="cSplit"></canvas></div></div>
+    <div class="chart-card"><h3>Top 12 Items &ndash; Combined (Both Locations)</h3><div class="chart-wrap top12"><canvas id="cTop12"></canvas></div></div>
+  </div>
+
+  <div class="section-title">Combined Daily Trend &ndash; Both Locations</div>
+  <div class="chart-card" style="margin-bottom:24px">
+    <h3>Total Items Sold per Day</h3>
+    <div class="chart-wrap"><canvas id="cTrend"></canvas></div>
+  </div>
+
+  <div class="section-title">Week 1 &middot; 04 May &ndash; 10 May 2026</div>
+  <div class="charts-2col">
+    <div class="chart-card"><h3>St Martin &ndash; Daily Sales</h3><div class="chart-wrap"><canvas id="cW1SM"></canvas></div></div>
+    <div class="chart-card"><h3>Kings Road &ndash; Daily Sales</h3><div class="chart-wrap"><canvas id="cW1KR"></canvas></div></div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+      <h3>St Martin &ndash; Week 1 Detail</h3><span class="chevron">&#x25BC;</span>
+    </div>
+    <div class="accordion-body">
+      <div class="inner"><div class="tbl-scroll"><table>
+        <thead><tr><th>Item</th><th class="num">Mon</th><th class="num">Tue</th><th class="num">Wed</th><th class="num">Thu</th><th class="num">Fri</th><th class="num">Sat</th><th class="num">Sun</th><th class="num">Total</th></tr></thead>
+        <tbody><tr class=""><td>3 Bruschetta</td><td class="num"></td><td class="num">6</td><td class="num">5</td><td class="num">4</td><td class="num">11</td><td class="num">7</td><td class="num">2</td><td class="num"><strong>35</strong></td></tr>
+<tr class=""><td>Anchovies and Butter</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Assiette 4 Fromages</td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num">2</td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"><strong>5</strong></td></tr>
+<tr class=""><td>Basket Bread WB</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">3</td><td class="num"></td><td class="num"><strong>4</strong></td></tr>
+<tr class=""><td>Cheese and Ham Toast</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">3</td><td class="num">6</td><td class="num"></td><td class="num">1</td><td class="num"><strong>10</strong></td></tr>
+<tr class=""><td>Chocolat Fondant</td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"><strong>2</strong></td></tr>
+<tr class=""><td>Crème Brûlée</td><td class="num"></td><td class="num">2</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num"><strong>4</strong></td></tr>
+<tr class=""><td>French Saucisson</td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num">1</td><td class="num">3</td><td class="num">1</td><td class="num">1</td><td class="num"><strong>8</strong></td></tr>
+<tr class=""><td>Garlic Bread</td><td class="num"></td><td class="num">1</td><td class="num">3</td><td class="num">3</td><td class="num">3</td><td class="num"></td><td class="num"></td><td class="num"><strong>10</strong></td></tr>
+<tr class=""><td>Lobster Rolls</td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"><strong>2</strong></td></tr>
+<tr class=""><td>Mango Sorbet</td><td class="num"></td><td class="num">2</td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"><strong>3</strong></td></tr>
+<tr class=""><td>Mushrooms Cocotte</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"><strong>2</strong></td></tr>
+<tr class=""><td>Olive Bowl</td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num">2</td><td class="num">2</td><td class="num">2</td><td class="num">1</td><td class="num"><strong>9</strong></td></tr>
+<tr class=""><td>Olive Oil Bruschetta</td><td class="num"></td><td class="num">6</td><td class="num">5</td><td class="num">12</td><td class="num">4</td><td class="num">9</td><td class="num">3</td><td class="num"><strong>39</strong></td></tr>
+<tr class=""><td>Pizzette</td><td class="num"></td><td class="num">1</td><td class="num">3</td><td class="num">2</td><td class="num">4</td><td class="num">2</td><td class="num">2</td><td class="num"><strong>14</strong></td></tr>
+<tr class="annule"><td>Pizzette (Annulé)</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Ricotta, Walnuts & Honey</td><td class="num"></td><td class="num">3</td><td class="num">1</td><td class="num">4</td><td class="num">5</td><td class="num">2</td><td class="num"></td><td class="num"><strong>15</strong></td></tr>
+<tr class=""><td>Salmon Bruschetta</td><td class="num"></td><td class="num">4</td><td class="num">2</td><td class="num">2</td><td class="num">5</td><td class="num">3</td><td class="num"></td><td class="num"><strong>16</strong></td></tr>
+<tr class=""><td>Stracciatella Tomato Salad</td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num">2</td><td class="num">1</td><td class="num"></td><td class="num"><strong>4</strong></td></tr>
+<tr class=""><td>Tiramisu Wine Bar</td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num">3</td><td class="num"></td><td class="num">1</td><td class="num"><strong>5</strong></td></tr>
+<tr class=""><td>Tomato Bread</td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">3</td><td class="num">1</td><td class="num">3</td><td class="num"></td><td class="num"><strong>8</strong></td></tr><tr class="total-row"><td><strong>TOTAL</strong></td><td class="num"><strong>0</strong></td><td class="num"><strong>26</strong></td><td class="num"><strong>30</strong></td><td class="num"><strong>42</strong></td><td class="num"><strong>51</strong></td><td class="num"><strong>35</strong></td><td class="num"><strong>13</strong></td><td class="num"><strong>197</strong></td></tr></tbody>
+      </table></div></div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+      <h3>Kings Road &ndash; Week 1 Detail</h3><span class="chevron">&#x25BC;</span>
+    </div>
+    <div class="accordion-body">
+      <div class="inner"><div class="tbl-scroll"><table>
+        <thead><tr><th>Item</th><th class="num">Mon</th><th class="num">Tue</th><th class="num">Wed</th><th class="num">Thu</th><th class="num">Fri</th><th class="num">Sat</th><th class="num">Sun</th><th class="num">Total</th></tr></thead>
+        <tbody><tr class=""><td>3 Bruschetta</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">5</td><td class="num"></td><td class="num">3</td><td class="num">2</td><td class="num"><strong>10</strong></td></tr>
+<tr class="annule"><td>3 Bruschetta (Annulé)</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Assiette 4 Fromages</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">1</td><td class="num"></td><td class="num">1</td><td class="num"><strong>3</strong></td></tr>
+<tr class=""><td>Basket Bread WB</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">2</td><td class="num"><strong>3</strong></td></tr>
+<tr class=""><td>Chocolat Fondant</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num"><strong>3</strong></td></tr>
+<tr class=""><td>Crème Brûlée</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num">1</td><td class="num"><strong>3</strong></td></tr>
+<tr class=""><td>French Saucisson</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">1</td><td class="num"><strong>2</strong></td></tr>
+<tr class="annule"><td>French Saucisson (Annulé)</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Garlic Bread</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num">1</td><td class="num"><strong>3</strong></td></tr>
+<tr class="annule"><td>Garlic Bread (Annulé)</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Lobster Rolls</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">3</td><td class="num"></td><td class="num"><strong>3</strong></td></tr>
+<tr class="annule"><td>Lobster Rolls (Annulé)</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">3</td><td class="num"></td><td class="num"><strong>3</strong></td></tr>
+<tr class="annule"><td>Mushrooms Cocotte (Annulé)</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Olive Bowl</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"><strong>3</strong></td></tr>
+<tr class="annule"><td>Olive Bowl (Annulé)</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Olive Oil Bruschetta</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Pizzette</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">1</td><td class="num">3</td><td class="num"><strong>5</strong></td></tr>
+<tr class="annule"><td>Pizzette (Annulé)</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"><strong>2</strong></td></tr>
+<tr class=""><td>Ricotta, Walnuts & Honey</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num"><strong>2</strong></td></tr>
+<tr class=""><td>Salmon Bruschetta</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">3</td><td class="num">1</td><td class="num"><strong>4</strong></td></tr>
+<tr class="annule"><td>Salmon Bruschetta (Annulé)</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Stracciatella Tomato Salad</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class="annule"><td>Stracciatella Tomato Salad (Annulé)</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Tiramisu Wine Bar</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num"></td><td class="num"><strong>2</strong></td></tr>
+<tr class=""><td>Tomato Bread</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num"><strong>5</strong></td></tr><tr class="total-row"><td><strong>TOTAL</strong></td><td class="num"><strong>0</strong></td><td class="num"><strong>0</strong></td><td class="num"><strong>0</strong></td><td class="num"><strong>11</strong></td><td class="num"><strong>6</strong></td><td class="num"><strong>31</strong></td><td class="num"><strong>17</strong></td><td class="num"><strong>65</strong></td></tr></tbody>
+      </table></div></div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:24px">Week 2 &middot; 11 May &ndash; 17 May 2026</div>
+  <div class="charts-2col">
+    <div class="chart-card"><h3>St Martin &ndash; Daily Sales</h3><div class="chart-wrap"><canvas id="cW2SM"></canvas></div></div>
+    <div class="chart-card"><h3>Kings Road &ndash; Daily Sales</h3><div class="chart-wrap"><canvas id="cW2KR"></canvas></div></div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+      <h3>St Martin &ndash; Week 2 Detail</h3><span class="chevron">&#x25BC;</span>
+    </div>
+    <div class="accordion-body">
+      <div class="inner"><div class="tbl-scroll"><table>
+        <thead><tr><th>Item</th><th class="num">Mon</th><th class="num">Tue</th><th class="num">Wed</th><th class="num">Thu</th><th class="num">Fri</th><th class="num">Sat</th><th class="num">Sun</th><th class="num">Total</th></tr></thead>
+        <tbody><tr class=""><td>3 Bruschetta</td><td class="num"></td><td class="num">1</td><td class="num">7</td><td class="num">7</td><td class="num">3</td><td class="num">10</td><td class="num"></td><td class="num"><strong>28</strong></td></tr>
+<tr class=""><td>Anchovies and Butter</td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num">2</td><td class="num"></td><td class="num"><strong>5</strong></td></tr>
+<tr class=""><td>Assiette 4 Fromages</td><td class="num"></td><td class="num">1</td><td class="num">4</td><td class="num">4</td><td class="num">4</td><td class="num"></td><td class="num"></td><td class="num"><strong>13</strong></td></tr>
+<tr class=""><td>Cheese and Ham Toast</td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num">3</td><td class="num">3</td><td class="num">3</td><td class="num"></td><td class="num"><strong>11</strong></td></tr>
+<tr class=""><td>Crème Brûlée</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num">1</td><td class="num">2</td><td class="num"></td><td class="num"><strong>5</strong></td></tr>
+<tr class="annule"><td>Crème Brûlée (Annulé)</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>French Saucisson</td><td class="num"></td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num">5</td><td class="num">1</td><td class="num"></td><td class="num"><strong>9</strong></td></tr>
+<tr class=""><td>Garlic Bread</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num">2</td><td class="num"></td><td class="num"><strong>3</strong></td></tr>
+<tr class=""><td>Lobster Rolls</td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Mango Sorbet</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Olive Bowl</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">5</td><td class="num">4</td><td class="num">3</td><td class="num"></td><td class="num"><strong>12</strong></td></tr>
+<tr class=""><td>Olive Oil Bruschetta</td><td class="num"></td><td class="num">1</td><td class="num">3</td><td class="num">3</td><td class="num">4</td><td class="num">10</td><td class="num">1</td><td class="num"><strong>22</strong></td></tr>
+<tr class=""><td>Pizzette</td><td class="num"></td><td class="num">2</td><td class="num">2</td><td class="num">2</td><td class="num">2</td><td class="num">2</td><td class="num"></td><td class="num"><strong>10</strong></td></tr>
+<tr class=""><td>Ricotta, Walnuts & Honey</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">4</td><td class="num">4</td><td class="num"></td><td class="num"><strong>9</strong></td></tr>
+<tr class=""><td>Salmon Bruschetta</td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">5</td><td class="num">3</td><td class="num">1</td><td class="num"></td><td class="num"><strong>10</strong></td></tr>
+<tr class="annule"><td>Salmon Bruschetta (Annulé)</td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"><strong>2</strong></td></tr>
+<tr class=""><td>Stracciatella Tomato Salad</td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num">2</td><td class="num">3</td><td class="num"></td><td class="num"><strong>6</strong></td></tr>
+<tr class=""><td>Tiramisu Wine Bar</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">3</td><td class="num"></td><td class="num"></td><td class="num"><strong>3</strong></td></tr>
+<tr class="annule"><td>Tiramisu Wine Bar (Annulé)</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num"></td><td class="num"></td><td class="num"><strong>2</strong></td></tr>
+<tr class=""><td>Tomato Bread</td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">2</td><td class="num">3</td><td class="num">1</td><td class="num"></td><td class="num"><strong>7</strong></td></tr>
+<tr class="annule"><td>Tomato Bread (Annulé)</td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"><strong>3</strong></td></tr><tr class="total-row"><td><strong>TOTAL</strong></td><td class="num"><strong>0</strong></td><td class="num"><strong>7</strong></td><td class="num"><strong>27</strong></td><td class="num"><strong>38</strong></td><td class="num"><strong>46</strong></td><td class="num"><strong>44</strong></td><td class="num"><strong>1</strong></td><td class="num"><strong>163</strong></td></tr></tbody>
+      </table></div></div>
+    </div>
+  </div>
+
+  <div class="accordion">
+    <div class="accordion-header" onclick="toggleAcc(this)">
+      <h3>Kings Road &ndash; Week 2 Detail</h3><span class="chevron">&#x25BC;</span>
+    </div>
+    <div class="accordion-body">
+      <div class="inner"><div class="tbl-scroll"><table>
+        <thead><tr><th>Item</th><th class="num">Mon</th><th class="num">Tue</th><th class="num">Wed</th><th class="num">Thu</th><th class="num">Fri</th><th class="num">Sat</th><th class="num">Sun</th><th class="num">Total</th></tr></thead>
+        <tbody><tr class=""><td>3 Bruschetta</td><td class="num">1</td><td class="num">1</td><td class="num">2</td><td class="num">4</td><td class="num">3</td><td class="num">6</td><td class="num">5</td><td class="num"><strong>22</strong></td></tr>
+<tr class=""><td>Anchovies and Butter</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num"></td><td class="num"><strong>3</strong></td></tr>
+<tr class=""><td>Assiette 4 Fromages</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num">3</td><td class="num">1</td><td class="num"><strong>5</strong></td></tr>
+<tr class=""><td>Basket Bread WB</td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">2</td><td class="num">1</td><td class="num"><strong>5</strong></td></tr>
+<tr class=""><td>Cheese and Ham Toast</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Chocolat Fondant</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Crème Brûlée</td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num">3</td><td class="num"></td><td class="num">2</td><td class="num"><strong>6</strong></td></tr>
+<tr class=""><td>French Saucisson</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">6</td><td class="num"></td><td class="num"><strong>6</strong></td></tr>
+<tr class=""><td>Garlic Bread</td><td class="num"></td><td class="num">2</td><td class="num"></td><td class="num">2</td><td class="num">2</td><td class="num">5</td><td class="num">3</td><td class="num"><strong>14</strong></td></tr>
+<tr class="annule"><td>Garlic Bread (Annulé)</td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Lobster Rolls</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num"><strong>1</strong></td></tr>
+<tr class=""><td>Mushrooms Cocotte</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">1</td><td class="num"></td><td class="num"><strong>2</strong></td></tr>
+<tr class=""><td>Olive Bowl</td><td class="num">1</td><td class="num">2</td><td class="num">1</td><td class="num">3</td><td class="num"></td><td class="num">7</td><td class="num">1</td><td class="num"><strong>15</strong></td></tr>
+<tr class=""><td>Pizzette</td><td class="num"></td><td class="num">1</td><td class="num"></td><td class="num">5</td><td class="num">4</td><td class="num">2</td><td class="num">8</td><td class="num"><strong>20</strong></td></tr>
+<tr class=""><td>Ricotta, Walnuts & Honey</td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td class="num"></td><td class="num">2</td><td class="num">2</td><td class="num">1</td><td class="num"><strong>8</strong></td></tr>
+<tr class=""><td>Salmon Bruschetta</td><td class="num">3</td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num">1</td><td class="num"></td><td class="num"></td><td class="num"><strong>6</strong></td></tr>
+<tr class=""><td>Stracciatella Tomato Salad</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">2</td><td class="num"></td><td class="num"></td><td class="num"><strong>2</strong></td></tr>
+<tr class=""><td>Tiramisu Wine Bar</td><td class="num">1</td><td class="num">2</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">3</td><td class="num"></td><td class="num"><strong>6</strong></td></tr>
+<tr class=""><td>Tomato Bread</td><td class="num">2</td><td class="num"></td><td class="num"></td><td class="num">1</td><td class="num">2</td><td class="num">2</td><td class="num"></td><td class="num"><strong>7</strong></td></tr><tr class="total-row"><td><strong>TOTAL</strong></td><td class="num"><strong>10</strong></td><td class="num"><strong>10</strong></td><td class="num"><strong>5</strong></td><td class="num"><strong>19</strong></td><td class="num"><strong>22</strong></td><td class="num"><strong>41</strong></td><td class="num"><strong>24</strong></td><td class="num"><strong>131</strong></td></tr></tbody>
+      </table></div></div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:24px">All Items &ndash; Combined (04/05/26&ndash;17/05/26)</div>
+  <div class="chart-card" style="margin-bottom:24px">
+    <div class="tbl-scroll"><table>
+      <thead><tr><th>#</th><th>Item</th><th class="num">Kings Road</th><th class="num">St Martin</th><th class="num">Total</th></tr></thead>
+      <tbody><tr class=""><td>1</td><td>3 Bruschetta</td><td class="num">32</td><td class="num">63</td><td class="num"><strong>95</strong></td></tr>
+<tr class=""><td>2</td><td>Olive Oil Bruschetta</td><td class="num">1</td><td class="num">61</td><td class="num"><strong>62</strong></td></tr>
+<tr class=""><td>3</td><td>Pizzette</td><td class="num">25</td><td class="num">24</td><td class="num"><strong>49</strong></td></tr>
+<tr class=""><td>4</td><td>Olive Bowl</td><td class="num">18</td><td class="num">21</td><td class="num"><strong>39</strong></td></tr>
+<tr class=""><td>5</td><td>Salmon Bruschetta</td><td class="num">10</td><td class="num">26</td><td class="num"><strong>36</strong></td></tr>
+<tr class=""><td>6</td><td>Ricotta, Walnuts & Honey</td><td class="num">10</td><td class="num">24</td><td class="num"><strong>34</strong></td></tr>
+<tr class=""><td>7</td><td>Garlic Bread</td><td class="num">17</td><td class="num">13</td><td class="num"><strong>30</strong></td></tr>
+<tr class=""><td>8</td><td>Tomato Bread</td><td class="num">12</td><td class="num">15</td><td class="num"><strong>27</strong></td></tr>
+<tr class=""><td>9</td><td>Assiette 4 Fromages</td><td class="num">8</td><td class="num">18</td><td class="num"><strong>26</strong></td></tr>
+<tr class=""><td>10</td><td>French Saucisson</td><td class="num">8</td><td class="num">17</td><td class="num"><strong>25</strong></td></tr>
+<tr class=""><td>11</td><td>Cheese and Ham Toast</td><td class="num">1</td><td class="num">21</td><td class="num"><strong>22</strong></td></tr>
+<tr class=""><td>12</td><td>Crème Brûlée</td><td class="num">9</td><td class="num">9</td><td class="num"><strong>18</strong></td></tr>
+<tr class=""><td>13</td><td>Tiramisu Wine Bar</td><td class="num">8</td><td class="num">8</td><td class="num"><strong>16</strong></td></tr>
+<tr class=""><td>14</td><td>Stracciatella Tomato Salad</td><td class="num">3</td><td class="num">10</td><td class="num"><strong>13</strong></td></tr>
+<tr class=""><td>15</td><td>Basket Bread WB</td><td class="num">8</td><td class="num">4</td><td class="num"><strong>12</strong></td></tr>
+<tr class=""><td>16</td><td>Anchovies and Butter</td><td class="num">3</td><td class="num">6</td><td class="num"><strong>9</strong></td></tr>
+<tr class=""><td>17</td><td>Lobster Rolls</td><td class="num">4</td><td class="num">3</td><td class="num"><strong>7</strong></td></tr>
+<tr class=""><td>18</td><td>Chocolat Fondant</td><td class="num">4</td><td class="num">2</td><td class="num"><strong>6</strong></td></tr>
+<tr class=""><td>19</td><td>Mushrooms Cocotte</td><td class="num">2</td><td class="num">2</td><td class="num"><strong>4</strong></td></tr>
+<tr class=""><td>20</td><td>Mango Sorbet</td><td class="num">0</td><td class="num">4</td><td class="num"><strong>4</strong></td></tr>
+<tr class="annule"><td>21</td><td>Lobster Rolls (Annulé)</td><td class="num">3</td><td class="num">0</td><td class="num"><strong>3</strong></td></tr>
+<tr class="annule"><td>22</td><td>Tomato Bread (Annulé)</td><td class="num">0</td><td class="num">3</td><td class="num"><strong>3</strong></td></tr>
+<tr class="annule"><td>23</td><td>Pizzette (Annulé)</td><td class="num">2</td><td class="num">1</td><td class="num"><strong>3</strong></td></tr>
+<tr class="annule"><td>24</td><td>Salmon Bruschetta (Annulé)</td><td class="num">1</td><td class="num">2</td><td class="num"><strong>3</strong></td></tr>
+<tr class="annule"><td>25</td><td>Tiramisu Wine Bar (Annulé)</td><td class="num">0</td><td class="num">2</td><td class="num"><strong>2</strong></td></tr>
+<tr class="annule"><td>26</td><td>Garlic Bread (Annulé)</td><td class="num">2</td><td class="num">0</td><td class="num"><strong>2</strong></td></tr>
+<tr class="annule"><td>27</td><td>3 Bruschetta (Annulé)</td><td class="num">1</td><td class="num">0</td><td class="num"><strong>1</strong></td></tr>
+<tr class="annule"><td>28</td><td>French Saucisson (Annulé)</td><td class="num">1</td><td class="num">0</td><td class="num"><strong>1</strong></td></tr>
+<tr class="annule"><td>29</td><td>Crème Brûlée (Annulé)</td><td class="num">0</td><td class="num">1</td><td class="num"><strong>1</strong></td></tr>
+<tr class="annule"><td>30</td><td>Olive Bowl (Annulé)</td><td class="num">1</td><td class="num">0</td><td class="num"><strong>1</strong></td></tr>
+<tr class="annule"><td>31</td><td>Mushrooms Cocotte (Annulé)</td><td class="num">1</td><td class="num">0</td><td class="num"><strong>1</strong></td></tr>
+<tr class="annule"><td>32</td><td>Stracciatella Tomato Salad (Annulé)</td><td class="num">1</td><td class="num">0</td><td class="num"><strong>1</strong></td></tr></tbody>
+    </table></div>
+  </div>
+
+</div>
+<div class="footer">Generated 18 May 2026 &middot; St George Restaurant Group</div>
+<script>
+function toggleAcc(header){
+  header.classList.toggle('open');
+  var body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+const P='#6366f1', G='#10b981';
+const grid='rgba(255,255,255,0.06)', tick='#64748b';
+function baseOpts(horiz){
+  return {
+    responsive:true, maintainAspectRatio:false,
+    indexAxis: horiz ? 'y' : 'x',
+    plugins:{
+      legend:{labels:{color:'#94a3b8',font:{size:11}}},
+      tooltip:{backgroundColor:'#1e2535',borderColor:'#374151',borderWidth:1,titleColor:'#e2e8f0',bodyColor:'#94a3b8'}
+    },
+    scales:{
+      x:{ticks:{color:tick,font:{size:10}},grid:{color:grid}},
+      y:{ticks:{color:tick,font:{size:10}},grid:{color:grid},beginAtZero:true}
+    }
+  };
+}
+
+new Chart('cSplit',{type:'doughnut',
+  data:{labels:['St Martin (360)','Kings Road (196)'],
+    datasets:[{data:[360,196],backgroundColor:[G,P],borderWidth:0,hoverOffset:8}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
+    plugins:{legend:{position:'bottom',labels:{color:'#94a3b8',padding:16}},
+    tooltip:{backgroundColor:'#1e2535',borderColor:'#374151',borderWidth:1,titleColor:'#e2e8f0',bodyColor:'#94a3b8'}}
+  }
+});
+
+new Chart('cTop12',{type:'bar',
+  data:{labels:["3 Bruschetta", "Olive Oil Bruschetta", "Pizzette", "Olive Bowl", "Salmon Bruschetta", "Ricotta, Walnuts & Hon", "Garlic Bread", "Tomato Bread", "Assiette 4 Fromages", "French Saucisson", "Cheese and Ham Toast", "Cr\u00e8me Br\u00fbl\u00e9e"],
+    datasets:[
+      {label:'Kings Road',data:[32, 1, 25, 18, 10, 10, 17, 12, 8, 8, 1, 9],backgroundColor:P,borderRadius:4},
+      {label:'St Martin', data:[63, 61, 24, 21, 26, 24, 13, 15, 18, 17, 21, 9],backgroundColor:G,borderRadius:4}
+    ]},
+  options:baseOpts(true)
+});
+
+new Chart('cW1SM',{type:'bar',data:{labels:["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],datasets:[{label:'Items',data:[0, 26, 30, 42, 51, 35, 13],backgroundColor:G,borderRadius:6}]},options:baseOpts()});
+new Chart('cW1KR',{type:'bar',data:{labels:["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],datasets:[{label:'Items',data:[0, 0, 0, 11, 6, 31, 17],backgroundColor:P,borderRadius:6}]},options:baseOpts()});
+new Chart('cW2SM',{type:'bar',data:{labels:["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],datasets:[{label:'Items',data:[0, 7, 27, 38, 46, 44, 1],backgroundColor:G,borderRadius:6}]},options:baseOpts()});
+new Chart('cW2KR',{type:'bar',data:{labels:["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],datasets:[{label:'Items',data:[10, 10, 5, 19, 22, 41, 24],backgroundColor:P,borderRadius:6}]},options:baseOpts()});
+
+new Chart('cTrend',{type:'line',
+  data:{labels:["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],datasets:[
+    {label:'Week 1',data:[0, 26, 30, 53, 57, 66, 30],borderColor:P,backgroundColor:'rgba(99,102,241,0.12)',fill:true,tension:0.4,pointRadius:5,pointBackgroundColor:P},
+    {label:'Week 2',data:[10, 17, 32, 57, 68, 85, 25],borderColor:G,backgroundColor:'rgba(16,185,129,0.12)',fill:true,tension:0.4,pointRadius:5,pointBackgroundColor:G}
+  ]},
+  options:baseOpts()
+});
+
+</script>
+</body>
+</html>
