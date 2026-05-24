@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kings Road — Weekly Sales</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a1a;padding:1rem}
+#lock{position:fixed;inset:0;background:#f5f4f0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;padding:2rem}
+#lock.hidden{display:none}
+.lock-icon{width:48px;height:48px;background:#1a1a1a;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem}
+.lock-icon svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.lock-title{font-size:16px;font-weight:600;color:#1a1a1a;margin-bottom:4px}
+.lock-sub{font-size:12px;color:#888;margin-bottom:1.75rem;text-align:center}
+.key-inputs{display:flex;gap:8px;margin-bottom:1rem}
+.key-inputs input{width:52px;height:56px;text-align:center;font-size:22px;font-weight:600;color:#1a1a1a;background:#fff;border:1.5px solid #e5e3dc;border-radius:10px;outline:none;text-transform:uppercase;-webkit-appearance:none}
+.key-inputs input:focus{border-color:#1a1a1a}
+.key-inputs input.filled{border-color:#1a1a1a;background:#fff}
+.key-inputs .sep{font-size:18px;color:#ccc;align-self:center;font-weight:300}
+#lock-btn{width:100%;max-width:228px;padding:13px;background:#1a1a1a;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:.75rem;letter-spacing:.02em}
+#lock-btn:active{opacity:.85}
+#lock-err{font-size:12px;color:#c0392b;min-height:16px;text-align:center}
+.wrap{max-width:700px;margin:0 auto}
+h1{font-size:17px;font-weight:600;margin-bottom:2px}
+.sub{font-size:12px;color:#888;margin-bottom:1.25rem}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:1rem}
+.kpi{background:#fff;border-radius:10px;padding:12px 14px;border:1px solid #e5e3dc}
+.kpi-label{font-size:10px;color:#888;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em}
+.kpi-val{font-size:20px;font-weight:600;color:#1a1a1a;line-height:1.1}
+.kpi-sub{font-size:10px;color:#bbb;margin-top:2px}
+
+.hl-stack{display:flex;flex-direction:column;gap:8px;margin-bottom:1.25rem}
+.hl-card{background:#fff;border:1px solid #e5e3dc;border-radius:12px;padding:12px 14px}
+.hl-title{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.hl-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0;border-bottom:1px solid #f0eeea}
+.hl-row:last-child{border-bottom:none}
+.hl-name{font-size:13px;font-weight:500;color:#1a1a1a}
+.hl-val{font-size:12px;color:#888;white-space:nowrap;margin-left:8px}
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:6px;font-weight:600;margin-bottom:6px}
+.badge-green{background:#e6f4e0;color:#2d6a1f}
+.badge-amber{background:#fdf0d8;color:#7a4a0a}
+.badge-blue{background:#e0edf9;color:#1a5a96}
+
+.section-label{font-size:10px;font-weight:600;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+
+/* Category accordion blocks */
+.cat-block{background:#fff;border:1px solid #e5e3dc;border-radius:12px;margin-bottom:8px;overflow:hidden}
+.cat-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+.cat-head-left{font-size:12px;font-weight:600;color:#1a1a1a;text-transform:uppercase;letter-spacing:.04em}
+.cat-head-right{display:flex;align-items:center;gap:8px}
+.cat-total{font-size:13px;font-weight:600;color:#185fa5}
+.chevron{font-size:14px;color:#aaa;transition:transform .2s}
+.chevron.open{transform:rotate(180deg)}
+.cat-body{display:none}
+.cat-body.open{display:block}
+
+/* Item rows inside category */
+.item-row{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-top:1px solid #f0eeea}
+.item-name{font-size:12px;color:#1a1a1a;flex:1;padding-right:8px}
+.day-pills{display:flex;gap:3px;flex-wrap:nowrap}
+.day-pill{font-size:10px;color:#888;text-align:center;min-width:22px}
+.day-pill span{display:block;font-size:9px;color:#bbb}
+.item-total{font-size:12px;font-weight:600;color:#185fa5;min-width:28px;text-align:right}
+
+/* Subtotal row */
+.sub-row{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;background:#faf9f6;border-top:1px solid #ddd}
+.sub-label{font-size:11px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.04em}
+.sub-nums{display:flex;gap:3px;align-items:center}
+.sub-day{font-size:10px;color:#888;min-width:22px;text-align:center}
+.sub-total-val{font-size:13px;font-weight:700;color:#185fa5;min-width:28px;text-align:right}
+
+/* Grand total */
+.grand-row{background:#1a1a1a;border-radius:10px;display:flex;justify-content:space-between;align-items:center;padding:12px 14px;margin-top:4px}
+.grand-label{font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.04em}
+.grand-day-nums{display:flex;gap:3px}
+.grand-day{font-size:10px;color:#aaa;min-width:22px;text-align:center}
+.grand-total-val{font-size:14px;font-weight:700;color:#a8d4ff;min-width:28px;text-align:right}
+
+/* Day header row */
+.days-header{display:flex;justify-content:space-between;align-items:center;padding:4px 14px 4px;margin-bottom:2px}
+.days-header-spacer{flex:1}
+.days-header-pills{display:flex;gap:3px}
+.day-lbl{font-size:9px;color:#aaa;min-width:22px;text-align:center;font-weight:500;text-transform:uppercase}
+.day-lbl-total{font-size:9px;color:#aaa;min-width:28px;text-align:right;font-weight:500;text-transform:uppercase}
+</style>
+</head>
+<body>
+<div id="lock">
+  <div class="lock-icon">
+    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+  </div>
+  <div class="lock-title">Kings Road</div>
+  <div class="lock-sub">Enter your access code to continue</div>
+  <div class="key-inputs">
+    <input id="k1" maxlength="1" inputmode="text" placeholder="A" autocomplete="off">
+    <input id="k2" maxlength="1" inputmode="text" placeholder="B" autocomplete="off">
+    <span class="sep">—</span>
+    <input id="k3" maxlength="1" inputmode="numeric" placeholder="0" autocomplete="off">
+    <input id="k4" maxlength="1" inputmode="numeric" placeholder="0" autocomplete="off">
+  </div>
+  <button id="lock-btn" onclick="checkKey()">Unlock</button>
+  <div id="lock-err"></div>
+</div>
+
+<div class="wrap" id="dashboard" style="display:none">
+  <h1>Kings Road</h1>
+  <p class="sub">Weekly sales · 18/05/26 – 24/05/26</p>
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Total sold</div>
+      <div class="kpi-val">5,597</div>
+      <div class="kpi-sub">7 days</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Pastries</div>
+      <div class="kpi-val">3,357</div>
+      <div class="kpi-sub">60% of total</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Sandwiches</div>
+      <div class="kpi-val">1,315</div>
+      <div class="kpi-sub">24% of total</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Breakfast</div>
+      <div class="kpi-val">925</div>
+      <div class="kpi-sub">17% of total</div>
+    </div>
+  </div>
+
+  <div class="hl-stack">
+    <div class="hl-card">
+      <div class="hl-title">Top sellers</div>
+      <div class="badge badge-amber">All week</div>
+      <div class="hl-row"><span class="hl-name">Tuna &amp; Tomato Baguette</span><span class="hl-val">706</span></div>
+      <div class="hl-row"><span class="hl-name">Croissant</span><span class="hl-val">627</span></div>
+      <div class="hl-row"><span class="hl-name">Pain Au Chocolat</span><span class="hl-val">566</span></div>
+      <div class="hl-row"><span class="hl-name">Kouign Amann</span><span class="hl-val">531</span></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div class="hl-card">
+        <div class="hl-title">Busiest days</div>
+        <div class="badge badge-blue">Volume</div>
+        <div class="hl-row"><span class="hl-name">Saturday</span><span class="hl-val">906</span></div>
+        <div class="hl-row"><span class="hl-name">Sunday</span><span class="hl-val">888</span></div>
+        <div class="hl-row"><span class="hl-name">Wednesday</span><span class="hl-val">828</span></div>
+      </div>
+      <div class="hl-card">
+        <div class="hl-title">Slow movers</div>
+        <div class="badge badge-green">Watch</div>
+        <div class="hl-row"><span class="hl-name">French Toast</span><span class="hl-val">1</span></div>
+        <div class="hl-row"><span class="hl-name">Mini Olive Oil</span><span class="hl-val">4</span></div>
+        <div class="hl-row"><span class="hl-name">Butter Baguette</span><span class="hl-val">16</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Item breakdown — tap to expand</div>
+
+  <div class="days-header">
+    <div class="days-header-spacer"></div>
+    <div class="days-header-pills">
+      <div class="day-lbl">M</div>
+      <div class="day-lbl">T</div>
+      <div class="day-lbl">W</div>
+      <div class="day-lbl">T</div>
+      <div class="day-lbl">F</div>
+      <div class="day-lbl">S</div>
+      <div class="day-lbl">S</div>
+    </div>
+    <div class="day-lbl-total">Tot</div>
+  </div>
+
+  <!-- BREAKFAST -->
+  <div class="cat-block">
+    <div class="cat-head" onclick="toggle(this)">
+      <span class="cat-head-left">Breakfast</span>
+      <div class="cat-head-right">
+        <span class="cat-total">925</span>
+        <i class="chevron">&#8964;</i>
+      </div>
+    </div>
+    <div class="cat-body">
+      <div class="item-row"><span class="item-name">Avocado Toast HB</span><div class="day-pills"><span class="day-pill">41</span><span class="day-pill">31</span><span class="day-pill">27</span><span class="day-pill">33</span><span class="day-pill">44</span><span class="day-pill">56</span><span class="day-pill">30</span></div><span class="item-total">262</span></div>
+      <div class="item-row"><span class="item-name">Basket Bread</span><div class="day-pills"><span class="day-pill">1</span><span class="day-pill">5</span><span class="day-pill">8</span><span class="day-pill">4</span><span class="day-pill">4</span><span class="day-pill">3</span><span class="day-pill">7</span></div><span class="item-total">32</span></div>
+      <div class="item-row"><span class="item-name">Crepe Caramel</span><div class="day-pills"><span class="day-pill">0</span><span class="day-pill">0</span><span class="day-pill">1</span><span class="day-pill">1</span><span class="day-pill">4</span><span class="day-pill">9</span><span class="day-pill">5</span></div><span class="item-total">20</span></div>
+      <div class="item-row"><span class="item-name">Croque Madame</span><div class="day-pills"><span class="day-pill">4</span><span class="day-pill">7</span><span class="day-pill">2</span><span class="day-pill">1</span><span class="day-pill">5</span><span class="day-pill">4</span><span class="day-pill">3</span></div><span class="item-total">26</span></div>
+      <div class="item-row"><span class="item-name">Eggs Benedict Salmon</span><div class="day-pills"><span class="day-pill">19</span><span class="day-pill">11</span><span class="day-pill">14</span><span class="day-pill">5</span><span class="day-pill">14</span><span class="day-pill">24</span><span class="day-pill">23</span></div><span class="item-total">110</span></div>
+      <div class="item-row"><span class="item-name">French Toast</span><div class="day-pills"><span class="day-pill">1</span><span class="day-pill">0</span><span class="day-pill">0</span><span class="day-pill">0</span><span class="day-pill">0</span><span class="day-pill">0</span><span class="day-pill">0</span></div><span class="item-total">1</span></div>
+      <div class="item-row"><span class="item-name">Fried Eggs</span><div class="day-pills"><span class="day-pill">4</span><span class="day-pill">10</span><span class="day-pill">5</span><span class="day-pill">2</span><span class="day-pill">7</span><span class="day-pill">2</span><span class="day-pill">15</span></div><span class="item-total">45</span></div>
+      <div class="item-row"><span class="item-name">Granola Bowl</span><div class="day-pills"><span class="day-pill">2</span><span class="day-pill">6</span><span class="day-pill">4</span><span class="day-pill">1</span><span class="day-pill">4</span><span class="day-pill">6</span><span class="day-pill">7</span></div><span class="item-total">30</span></div>
+      <div class="item-row"><span class="item-name">Pizza</span><div class="day-pills"><span class="day-pill">36</span><span class="day-pill">13</span><span class="day-pill">33</span><span class="day-pill">30</span><span class="day-pill">20</span><span class="day-pill">34</span><span class="day-pill">47</span></div><span class="item-total">213</span></div>
+      <div class="item-row"><span class="item-name">Scrambled Eggs</span><div class="day-pills"><span class="day-pill">16</span><span class="day-pill">25</span><span class="day-pill">25</span><span class="day-pill">31</span><span class="day-pill">21</span><span class="day-pill">33</span><span class="day-pill">35</span></div><span class="item-total">186</span></div>
+      <div class="sub-row"><span class="sub-label">Total</span><div class="sub-nums"><span class="sub-day">124</span><span class="sub-day">108</span><span class="sub-day">119</span><span class="sub-day">108</span><span class="sub-day">123</span><span class="sub-day">171</span><span class="sub-day">172</span></div><span class="sub-total-val">925</span></div>
+    </div>
+  </div>
+
+  <!-- PASTRIES -->
+  <div class="cat-block">
+    <div class="cat-head" onclick="toggle(this)">
+      <span class="cat-head-left">Pastries</span>
+      <div class="cat-head-right">
+        <span class="cat-total">3,357</span>
+        <i class="chevron">&#8964;</i>
+      </div>
+    </div>
+    <div class="cat-body">
+      <div class="item-row"><span class="item-name">Almond Croissant</span><div class="day-pills"><span class="day-pill">30</span><span class="day-pill">35</span><span class="day-pill">35</span><span class="day-pill">57</span><span class="day-pill">28</span><span class="day-pill">55</span><span class="day-pill">48</span></div><span class="item-total">288</span></div>
+      <div class="item-row"><span class="item-name">Apple Tart</span><div class="day-pills"><span class="day-pill">23</span><span class="day-pill">27</span><span class="day-pill">29</span><span class="day-pill">29</span><span class="day-pill">29</span><span class="day-pill">35</span><span class="day-pill">36</span></div><span class="item-total">208</span></div>
+      <div class="item-row"><span class="item-name">Babka Nutella</span><div class="day-pills"><span class="day-pill">54</span><span class="day-pill">54</span><span class="day-pill">52</span><span class="day-pill">53</span><span class="day-pill">47</span><span class="day-pill">61</span><span class="day-pill">58</span></div><span class="item-total">379</span></div>
+      <div class="item-row"><span class="item-name">Butter Baguette</span><div class="day-pills"><span class="day-pill">3</span><span class="day-pill">1</span><span class="day-pill">2</span><span class="day-pill">3</span><span class="day-pill">0</span><span class="day-pill">5</span><span class="day-pill">2</span></div><span class="item-total">16</span></div>
+      <div class="item-row"><span class="item-name">Butter/Jam Side</span><div class="day-pills"><span class="day-pill">0</span><span class="day-pill">3</span><span class="day-pill">1</span><span class="day-pill">2</span><span class="day-pill">3</span><span class="day-pill">5</span><span class="day-pill">5</span></div><span class="item-total">19</span></div>
+      <div class="item-row"><span class="item-name">Choc Hazelnut Cookie</span><div class="day-pills"><span class="day-pill">43</span><span class="day-pill">72</span><span class="day-pill">69</span><span class="day-pill">50</span><span class="day-pill">85</span><span class="day-pill">53</span><span class="day-pill">78</span></div><span class="item-total">450</span></div>
+      <div class="item-row"><span class="item-name">Choux Caramel</span><div class="day-pills"><span class="day-pill">14</span><span class="day-pill">15</span><span class="day-pill">10</span><span class="day-pill">13</span><span class="day-pill">6</span><span class="day-pill">10</span><span class="day-pill">16</span></div><span class="item-total">84</span></div>
+      <div class="item-row"><span class="item-name">Choux Chantilly</span><div class="day-pills"><span class="day-pill">8</span><span class="day-pill">15</span><span class="day-pill">10</span><span class="day-pill">7</span><span class="day-pill">6</span><span class="day-pill">6</span><span class="day-pill">9</span></div><span class="item-total">61</span></div>
+      <div class="item-row"><span class="item-name">Croissant</span><div class="day-pills"><span class="day-pill">71</span><span class="day-pill">68</span><span class="day-pill">118</span><span class="day-pill">89</span><span class="day-pill">95</span><span class="day-pill">95</span><span class="day-pill">91</span></div><span class="item-total">627</span></div>
+      <div class="item-row"><span class="item-name">Jam Baguette</span><div class="day-pills"><span class="day-pill">10</span><span class="day-pill">7</span><span class="day-pill">9</span><span class="day-pill">6</span><span class="day-pill">1</span><span class="day-pill">5</span><span class="day-pill">3</span></div><span class="item-total">41</span></div>
+      <div class="item-row"><span class="item-name">Kouign Amann</span><div class="day-pills"><span class="day-pill">64</span><span class="day-pill">53</span><span class="day-pill">75</span><span class="day-pill">86</span><span class="day-pill">93</span><span class="day-pill">86</span><span class="day-pill">74</span></div><span class="item-total">531</span></div>
+      <div class="item-row"><span class="item-name">Pain Au Chocolat</span><div class="day-pills"><span class="day-pill">47</span><span class="day-pill">67</span><span class="day-pill">108</span><span class="day-pill">70</span><span class="day-pill">76</span><span class="day-pill">95</span><span class="day-pill">103</span></div><span class="item-total">566</span></div>
+      <div class="item-row"><span class="item-name">Strawberry Baguette</span><div class="day-pills"><span class="day-pill">10</span><span class="day-pill">16</span><span class="day-pill">10</span><span class="day-pill">15</span><span class="day-pill">15</span><span class="day-pill">8</span><span class="day-pill">13</span></div><span class="item-total">87</span></div>
+      <div class="sub-row"><span class="sub-label">Total</span><div class="sub-nums"><span class="sub-day">377</span><span class="sub-day">433</span><span class="sub-day">528</span><span class="sub-day">480</span><span class="sub-day">484</span><span class="sub-day">519</span><span class="sub-day">536</span></div><span class="sub-total-val">3,357</span></div>
+    </div>
+  </div>
+
+  <!-- SANDWICHES -->
+  <div class="cat-block">
+    <div class="cat-head" onclick="toggle(this)">
+      <span class="cat-head-left">Sandwiches</span>
+      <div class="cat-head-right">
+        <span class="cat-total">1,315</span>
+        <i class="chevron">&#8964;</i>
+      </div>
+    </div>
+    <div class="cat-body">
+      <div class="item-row"><span class="item-name">Ham &amp; Pickles Baguette</span><div class="day-pills"><span class="day-pill">49</span><span class="day-pill">38</span><span class="day-pill">66</span><span class="day-pill">57</span><span class="day-pill">60</span><span class="day-pill">67</span><span class="day-pill">65</span></div><span class="item-total">402</span></div>
+      <div class="item-row"><span class="item-name">Mini Baguette Saucisson</span><div class="day-pills"><span class="day-pill">28</span><span class="day-pill">16</span><span class="day-pill">25</span><span class="day-pill">32</span><span class="day-pill">27</span><span class="day-pill">51</span><span class="day-pill">24</span></div><span class="item-total">203</span></div>
+      <div class="item-row"><span class="item-name">Mini Olive Oil Baguette</span><div class="day-pills"><span class="day-pill">0</span><span class="day-pill">0</span><span class="day-pill">0</span><span class="day-pill">1</span><span class="day-pill">0</span><span class="day-pill">2</span><span class="day-pill">1</span></div><span class="item-total">4</span></div>
+      <div class="item-row"><span class="item-name">Tuna &amp; Tomato Baguette</span><div class="day-pills"><span class="day-pill">89</span><span class="day-pill">112</span><span class="day-pill">90</span><span class="day-pill">115</span><span class="day-pill">114</span><span class="day-pill">96</span><span class="day-pill">90</span></div><span class="item-total">706</span></div>
+      <div class="sub-row"><span class="sub-label">Total</span><div class="sub-nums"><span class="sub-day">166</span><span class="sub-day">166</span><span class="sub-day">181</span><span class="sub-day">205</span><span class="sub-day">201</span><span class="sub-day">216</span><span class="sub-day">180</span></div><span class="sub-total-val">1,315</span></div>
+    </div>
+  </div>
+
+  <div class="grand-row">
+    <span class="grand-label">Grand total</span>
+    <div class="grand-day-nums">
+      <span class="grand-day">667</span>
+      <span class="grand-day">707</span>
+      <span class="grand-day">828</span>
+      <span class="grand-day">793</span>
+      <span class="grand-day">808</span>
+      <span class="grand-day">906</span>
+      <span class="grand-day">888</span>
+    </div>
+    <span class="grand-total-val">5,597</span>
+  </div>
+</div>
+
+<script>
+var SECRET='LD26';
+var ids=['k1','k2','k3','k4'];
+ids.forEach(function(id,i){
+  var el=document.getElementById(id);
+  el.addEventListener('input',function(){
+    var v=el.value;
+    if(i<2){el.value=v.replace(/[^a-zA-Z]/g,'').toUpperCase().slice(-1);}
+    else{el.value=v.replace(/[^0-9]/g,'').slice(-1);}
+    el.classList.toggle('filled',el.value!=='');
+    if(el.value&&i<3)document.getElementById(ids[i+1]).focus();
+    document.getElementById('lock-err').textContent='';
+  });
+  el.addEventListener('keydown',function(e){
+    if(e.key==='Backspace'&&!el.value&&i>0)document.getElementById(ids[i-1]).focus();
+    if(e.key==='Enter')checkKey();
+  });
+});
+function checkKey(){
+  var code=ids.map(function(id){return document.getElementById(id).value;}).join('');
+  if(code.toUpperCase()===SECRET){
+    document.getElementById('lock').classList.add('hidden');
+    document.getElementById('dashboard').style.display='block';
+  } else {
+    document.getElementById('lock-err').textContent='Incorrect code — try again';
+    ids.forEach(function(id){var el=document.getElementById(id);el.value='';el.classList.remove('filled');});
+    document.getElementById('k1').focus();
+  }
+}
+function toggle(head){
+  var body=head.nextElementSibling;
+  var chev=head.querySelector('.chevron');
+  var open=body.classList.toggle('open');
+  chev.classList.toggle('open',open);
+}
+</script>
+</body>
+</html>
